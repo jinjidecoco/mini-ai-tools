@@ -1,0 +1,157 @@
+<!--作业检查工具-->
+<view class="container">
+  <!-- 顶部导航栏 -->
+  <view class="tool-navbar">
+    <view class="nav-back" bindtap="goBack">
+      <image src="../../../../assets/icons/arrow-left.svg" mode="aspectFit"></image>
+    </view>
+    <text class="nav-title">作业检查</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <!-- 主内容 -->
+  <view class="tool-content">
+    <!-- 输入区域 -->
+    <view class="input-section">
+      <view class="subject-tabs">
+        <view class="subject-tab {{subject === 'math' ? 'active' : ''}}" bindtap="selectSubject" data-subject="math">
+          <text>数学</text>
+        </view>
+        <view class="subject-tab {{subject === 'chinese' ? 'active' : ''}}" bindtap="selectSubject" data-subject="chinese">
+          <text>语文</text>
+        </view>
+        <view class="subject-tab {{subject === 'english' ? 'active' : ''}}" bindtap="selectSubject" data-subject="english">
+          <text>英语</text>
+        </view>
+        <view class="subject-tab {{subject === 'physics' ? 'active' : ''}}" bindtap="selectSubject" data-subject="physics">
+          <text>物理</text>
+        </view>
+      </view>
+
+      <view class="input-actions">
+        <view class="import-button" bindtap="chooseFile">
+          <image src="../../../../assets/icons/file-upload.svg" mode="aspectFit"></image>
+          <text>导入文件</text>
+        </view>
+        <view class="scan-button" bindtap="scanHomework">
+          <image src="../../../../assets/icons/scan.svg" mode="aspectFit"></image>
+          <text>扫描作业</text>
+        </view>
+      </view>
+
+      <view class="homework-input-container">
+        <textarea class="homework-input" placeholder="请输入需要检查的作业内容..." value="{{homeworkContent}}" bindinput="onContentInput"></textarea>
+        <view class="clear-button" bindtap="clearContent" wx:if="{{homeworkContent}}">
+          <image src="../../../../assets/icons/clear.svg" mode="aspectFit"></image>
+        </view>
+      </view>
+
+      <view class="tips-card" wx:if="{{showTips}}">
+        <view class="tips-header">
+          <text class="tips-title">使用提示</text>
+          <view class="tips-close" bindtap="toggleTips">
+            <image src="../../../../assets/icons/close.svg" mode="aspectFit"></image>
+          </view>
+        </view>
+        <view class="tips-content">
+          <view class="tip-item">1. 选择对应的学科，获得更精准的反馈</view>
+          <view class="tip-item">2. 输入完整的作业内容，包括题目和解答</view>
+          <view class="tip-item">3. 支持文本、拍照和文件导入多种方式</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 检查按钮 -->
+    <view class="action-button check" bindtap="checkHomework" wx:if="{{!homeworkCheck}}">
+      <text>{{isChecking ? '检查中...' : '开始检查'}}</text>
+    </view>
+
+    <!-- 结果展示区域 -->
+    <view class="result-section" wx:if="{{homeworkCheck && homeworkCheck.result}}">
+      <view class="result-header">
+        <view class="score-display">
+          <text class="score-value">{{homeworkCheck.result.score}}</text>
+          <text class="score-label">分</text>
+        </view>
+        <view class="result-summary">
+          <text>{{homeworkCheck.result.summary}}</text>
+        </view>
+      </view>
+
+      <view class="toggle-container">
+        <text>详细反馈</text>
+        <switch checked="{{detailedFeedback}}" bindchange="toggleDetailedFeedback" color="#3B82F6"></switch>
+      </view>
+
+      <view class="result-details" wx:if="{{detailedFeedback}}">
+        <view class="feedback-card">
+          <view class="card-title">
+            <text>总体评价</text>
+          </view>
+          <view class="feedback-content">
+            <text>{{homeworkCheck.result.feedback}}</text>
+          </view>
+          <view class="copy-button" bindtap="copyFeedback">
+            <image src="../../../../assets/icons/copy.svg" mode="aspectFit"></image>
+            <text>复制反馈</text>
+          </view>
+        </view>
+
+        <view class="corrections-card">
+          <view class="card-title">
+            <text>具体修改建议</text>
+          </view>
+          <view class="correction-item" wx:for="{{homeworkCheck.result.corrections}}" wx:key="index">
+            <view class="correction-original">
+              <text class="label">原内容：</text>
+              <text>{{item.original}}</text>
+            </view>
+            <view class="correction-fixed">
+              <text class="label">修正：</text>
+              <text>{{item.corrected}}</text>
+            </view>
+            <view class="correction-explanation">
+              <text class="label">说明：</text>
+              <text>{{item.explanation}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="action-buttons">
+        <view class="action-button secondary" bindtap="clearContent">
+          <text>重新输入</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 错误信息 -->
+    <view class="error-message" wx:if="{{errorMessage}}">
+      <text>{{errorMessage}}</text>
+    </view>
+
+    <!-- 历史记录 -->
+    <view class="history-section" wx:if="{{homeworkHistory.length > 0}}">
+      <view class="section-header">
+        <text class="section-title">历史记录</text>
+      </view>
+      <view class="history-list">
+        <view class="history-item" wx:for="{{homeworkHistory}}" wx:key="id" bindtap="viewHistoryCheck" data-id="{{item.id}}">
+          <view class="history-subject">
+            <text wx:if="{{item.subject === 'math'}}">数学</text>
+            <text wx:elif="{{item.subject === 'chinese'}}">语文</text>
+            <text wx:elif="{{item.subject === 'english'}}">英语</text>
+            <text wx:elif="{{item.subject === 'physics'}}">物理</text>
+            <text wx:else>{{item.subject}}</text>
+          </view>
+          <view class="history-content">
+            <text>{{item.content.slice(0, 50)}}{{item.content.length > 50 ? '...' : ''}}</text>
+          </view>
+          <view class="history-score" wx:if="{{item.result}}">
+            <text>{{item.result.score}}分</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

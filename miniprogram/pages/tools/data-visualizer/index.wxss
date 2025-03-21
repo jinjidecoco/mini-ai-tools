@@ -1,0 +1,200 @@
+/**index.wxss**/
+page {
+  background-color: #F9FAFB;
+  height: 100%;
+  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  line-height: 1.6;
+  --primary-color: #3B82F6;
+  --secondary-color: #10B981;
+  --accent-color: #8B5CF6;
+  --text-primary: #111827;
+  --text-secondary: #6B7280;
+  --bg-page: #F9FAFB;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.container {
+  padding: 20rpx;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: 20rpx 0;
+  margin-bottom: 30rpx;
+}
+
+.title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  margin-top: 10rpx;
+}
+
+.data-input-section {
+  background-color: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 30rpx;
+}
+
+.input-label {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 10rpx;
+}
+
+.data-textarea {
+  width: 100%;
+  height: 200rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+  border: 1px solid #E5E7EB;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  margin-bottom: 20rpx;
+}
+
+.input-hint {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  margin-bottom: 20rpx;
+}
+
+.chart-type-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+  margin: 20rpx 0;
+}
+
+.chart-type-option {
+  flex: 1;
+  min-width: 140rpx;
+  padding: 20rpx;
+  background-color: #EFF6FF;
+  border-radius: 8rpx;
+  text-align: center;
+  font-size: 26rpx;
+  font-weight: 500;
+  color: var(--primary-color);
+}
+
+.chart-type-option.selected {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.visualize-button {
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 8rpx;
+  padding: 20rpx 40rpx;
+  text-align: center;
+  font-weight: 500;
+  margin: 20rpx 0;
+}
+
+.chart-section {
+  background-color: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: var(--card-shadow);
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 20rpx;
+}
+
+.chart-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 400rpx;
+}
+
+.export-section {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 20rpx;
+}
+
+.export-button {
+  flex: 1;
+  background-color: var(--secondary-color);
+  color: white;
+  border-radius: 8rpx;
+  padding: 16rpx 30rpx;
+  text-align: center;
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.loading {
+  text-align: center;
+  padding: 40rpx 0;
+  color: var(--text-secondary);
+}
+
+.error {
+  color: #EF4444;
+  padding: 20rpx;
+  background-color: #FEF2F2;
+  border-radius: 8rpx;
+  margin-top: 20rpx;
+}
+
+/* Utility classes */
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.bg-primary {
+  background-color: var(--primary-color);
+}
+
+.bg-secondary {
+  background-color: var(--secondary-color);
+}
+
+.bg-accent {
+  background-color: var(--accent-color);
+}
+
+.bg-page {
+  background-color: var(--bg-page);
+}
+
+.shadow-card {
+  box-shadow: var(--card-shadow);
+}
+
+/* Fix for scrollbar */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Animation for active state */
+.scale-on-active:active {
+  transform: scale(0.98);
+}

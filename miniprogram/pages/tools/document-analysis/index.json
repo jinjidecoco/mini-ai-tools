@@ -1,0 +1,10 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {},
+  "navigationBarTitleText": "AI文档分析",
+  "enablePullDownRefresh": false,
+  "backgroundColor": "#f5f7fa",
+  "backgroundTextStyle": "dark",
+  "disableScroll": false,
+  "pageOrientation": "portrait"
+}

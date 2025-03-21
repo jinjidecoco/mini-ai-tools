@@ -1,0 +1,110 @@
+<!--profile.wxml-->
+<view class="bg-page min-h-screen">
+  <!-- Custom Navigation Bar -->
+  <view class="px-4 py-6 flex items-center justify-between">
+    <view class="flex items-center">
+      <text class="text-lg font-semibold text-primary">个人中心</text>
+    </view>
+    <view class="flex items-center">
+      <view class="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm">
+        <image src="../../assets/icons/settings.svg" class="w-5 h-5" mode="aspectFit" bindtap="navigateTo" data-url="/pages/settings/settings"></image>
+      </view>
+    </view>
+  </view>
+
+  <scroll-view scroll-y="{{true}}" enhanced show-scrollbar="{{false}}"
+               bindrefresherrefresh="onPullDownRefresh"
+               refresher-enabled="{{true}}"
+               refresher-threshold="{{80}}"
+               refresher-default-style="black"
+               refresher-background="#F9FAFB">
+    <view class="p-4">
+      <!-- User Profile Card -->
+      <view class="bg-white rounded-2xl shadow-card mb-6 overflow-hidden">
+        <!-- VIP Banner if user is VIP -->
+        <view wx:if="{{isVip}}" class="bg-gradient-to-r from-yellow-400 to-orange-500 px-4 py-1 flex justify-between items-center">
+          <view class="flex items-center">
+            <image src="../../assets/icons/vip-badge.svg" class="w-4 h-4 mr-1" mode="aspectFit"></image>
+            <text class="text-sm text-white font-medium">VIP会员</text>
+          </view>
+          <text class="text-xs text-white opacity-80">有效期至: {{vipExpireDate}}</text>
+        </view>
+
+        <!-- User Info -->
+        <view class="p-5">
+          <block wx:if="{{hasUserInfo}}">
+            <view class="flex items-center">
+              <image src="{{userInfo.avatarUrl}}" class="w-16 h-16 rounded-full shadow-sm" mode="aspectFill"></image>
+              <view class="ml-4">
+                <view class="flex items-center">
+                  <text class="text-lg font-semibold text-primary">{{userInfo.nickName}}</text>
+                  <view wx:if="{{isVip}}" class="ml-2 px-2 py-0-5 bg-yellow-50 rounded-full">
+                    <text class="text-xxs text-yellow-600">VIP</text>
+                  </view>
+                </view>
+                <text class="text-secondary text-sm mt-1 block">普通用户</text>
+              </view>
+            </view>
+          </block>
+          <block wx:else>
+            <view class="flex items-center">
+              <view class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
+                <image src="../../assets/icons/user-placeholder.svg" class="w-8 h-8 opacity-30" mode="aspectFit"></image>
+              </view>
+              <view class="ml-4">
+                <text class="text-primary font-medium mb-1 block">未登录</text>
+                <button class="bg-primary text-white text-sm px-4 py-1 rounded-lg"
+                        wx:if="{{canIUseGetUserProfile}}"
+                        bindtap="getUserProfile">点击登录</button>
+              </view>
+            </view>
+          </block>
+
+          <!-- User Stats -->
+          <view class="grid grid-cols-3 gap-2 mt-5">
+            <view wx:for="{{userStats}}" wx:key="id" class="flex flex-col items-center py-2 rounded-lg bg-gray-50">
+              <text class="text-primary font-medium">{{item.value}}</text>
+              <text class="text-xs text-secondary mt-1">{{item.title}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- Quick Actions -->
+      <view class="bg-white rounded-2xl shadow-card mb-6 p-4">
+        <view class="grid grid-cols-3 gap-3">
+          <view wx:for="{{quickActions}}" wx:key="id"
+                class="flex flex-col items-center py-3 scale-on-active {{item.id === 1 ? 'bg-blue-50' : item.id === 2 ? 'bg-green-50' : 'bg-purple-50'}} rounded-xl"
+                bindtap="{{item.id === 1 ? 'handleUpgradeVip' : (item.id === 2 ? 'handleShare' : 'navigateTo')}}"
+                data-url="{{item.url}}">
+            <image src="{{item.icon}}" class="w-7 h-7 mb-2" mode="aspectFit"></image>
+            <text class="text-sm text-primary">{{item.title}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- Menu Options -->
+      <view class="bg-white rounded-2xl shadow-card mb-6">
+        <view wx:for="{{menuOptions}}" wx:key="id"
+              class="flex items-center p-4 border-b border-gray-100 scale-on-active last-child-no-border"
+              bindtap="navigateTo"
+              data-url="{{item.url}}">
+          <view class="w-8 h-8 rounded-lg {{item.id % 2 === 0 ? 'bg-green-50' : 'bg-blue-50'}} flex items-center justify-center mr-3">
+            <image src="{{item.icon}}" class="w-5 h-5" mode="aspectFit"></image>
+          </view>
+          <text class="flex-1 text-primary">{{item.title}}</text>
+          <image wx:if="{{item.showArrow}}" src="../../assets/icons/arrow-right.svg" class="w-4 h-4 opacity-40" mode="aspectFit"></image>
+        </view>
+      </view>
+
+      <!-- App Version Info -->
+      <view class="py-4 flex flex-col items-center">
+        <text class="text-secondary text-xs">AI工具箱 v1.0.0</text>
+        <text class="text-secondary text-xxs mt-1">Copyright © 2023</text>
+      </view>
+
+      <!-- Bottom Padding for Tab Bar -->
+      <view class="h-20"></view>
+    </view>
+  </scroll-view>
+</view>

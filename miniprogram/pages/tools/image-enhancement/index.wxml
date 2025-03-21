@@ -1,0 +1,160 @@
+<!--image-enhancement/index.wxml-->
+<view class="bg-page min-h-screen">
+  <!-- Custom Navigation Bar -->
+  <view class="px-4 py-6 flex items-center justify-between">
+    <view class="flex items-center">
+      <view class="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm mr-2" bindtap="goBack">
+        <image src="../../../assets/icons/arrow-left.svg" class="w-5 h-5" mode="aspectFit"></image>
+      </view>
+      <text class="text-lg font-semibold text-primary">AI图像增强</text>
+    </view>
+  </view>
+
+  <scroll-view scroll-y="{{true}}" enhanced show-scrollbar="{{false}}" class="pb-20">
+    <view class="px-4">
+      <!-- Image Upload Section -->
+      <view class="bg-white rounded-2xl shadow-card mb-6 p-4">
+        <view class="relative">
+          <block wx:if="{{!originalImageUrl}}">
+            <view class="w-full h-64 bg-gray-50 rounded-xl flex flex-col items-center justify-center" bindtap="chooseImage">
+              <image src="../../../assets/icons/image-upload.svg" class="w-16 h-16 mb-4 opacity-40" mode="aspectFit"></image>
+              <text class="text-secondary">点击上传图片</text>
+              <text class="text-xs text-secondary mt-2">支持 JPG、PNG、WEBP 格式</text>
+            </view>
+          </block>
+          <block wx:else>
+            <view class="relative w-full rounded-xl overflow-hidden bg-gray-50">
+              <image src="{{originalImageUrl}}" mode="widthFix" class="w-full" bindtap="previewOriginalImage"></image>
+              <view class="absolute top-2 right-2">
+                <view class="w-8 h-8 rounded-full bg-white bg-opacity-80 flex items-center justify-center shadow-sm" bindtap="clearImage">
+                  <image src="../../../assets/icons/close.svg" class="w-4 h-4" mode="aspectFit"></image>
+                </view>
+              </view>
+            </view>
+          </block>
+        </view>
+      </view>
+
+      <!-- Enhancement Options -->
+      <block wx:if="{{originalImageUrl}}">
+        <view class="bg-white rounded-2xl shadow-card mb-6 p-4">
+          <text class="text-primary font-medium mb-4 block">选择增强类型</text>
+          <view class="grid grid-cols-2 gap-3">
+            <view wx:for="{{enhancementOptions}}" wx:key="id"
+                  class="p-3 rounded-xl {{selectedEnhancement === item.id ? 'bg-blue-500' : 'bg-gray-50'}}"
+                  bindtap="selectEnhancement"
+                  data-id="{{item.id}}">
+              <view class="flex flex-col items-center">
+                <image src="{{item.icon}}" class="w-10 h-10 mb-2" mode="aspectFit"></image>
+                <text class="text-sm font-medium {{selectedEnhancement === item.id ? 'text-white' : 'text-primary'}}">{{item.title}}</text>
+                <text class="text-xs text-center {{selectedEnhancement === item.id ? 'text-white opacity-80' : 'text-secondary'}}">{{item.description}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- Enhance Button -->
+        <view class="mb-6">
+          <button class="w-full py-3 bg-blue-500 text-white rounded-xl flex items-center justify-center"
+                  bindtap="enhanceImage"
+                  disabled="{{isEnhancing}}">
+            <text wx:if="{{!isEnhancing}}">开始增强</text>
+            <view wx:else class="flex items-center">
+              <text class="mr-2">处理中</text>
+              <view class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></view>
+            </view>
+          </button>
+        </view>
+      </block>
+
+      <!-- Result Section -->
+      <block wx:if="{{enhancedImageUrl}}">
+        <view class="bg-white rounded-2xl shadow-card mb-6 overflow-hidden">
+          <view class="px-4 pt-4 pb-2 flex items-center justify-between">
+            <text class="text-primary font-medium">增强结果</text>
+            <view class="flex space-x-2">
+              <view class="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center" bindtap="saveImage">
+                <image src="../../../assets/icons/download.svg" class="w-4 h-4" mode="aspectFit"></image>
+              </view>
+              <view class="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center" bindtap="shareImage">
+                <image src="../../../assets/icons/share.svg" class="w-4 h-4" mode="aspectFit"></image>
+              </view>
+            </view>
+          </view>
+
+          <!-- Before/After Comparison -->
+          <view class="p-4">
+            <view class="grid grid-cols-2 gap-2">
+              <view class="rounded-xl overflow-hidden">
+                <view class="bg-gray-800 py-1 text-center">
+                  <text class="text-white text-xs">原图</text>
+                </view>
+                <image src="{{originalImageUrl}}" mode="aspectFill" class="w-full h-36" bindtap="previewOriginalImage"></image>
+              </view>
+              <view class="rounded-xl overflow-hidden">
+                <view class="bg-blue-500 py-1 text-center">
+                  <text class="text-white text-xs">增强</text>
+                </view>
+                <image src="{{enhancedImageUrl}}" mode="aspectFill" class="w-full h-36" bindtap="previewEnhancedImage"></image>
+              </view>
+            </view>
+
+            <view class="mt-3 bg-gray-50 rounded-xl p-3">
+              <view class="flex items-center">
+                <text class="text-xs text-blue-500 bg-blue-50 px-2 py-0-5 rounded-full">{{currentEnhancementTitle}}</text>
+                <text class="text-xxs text-secondary ml-2">{{wxs.formatDate(enhancementTime)}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- History Section -->
+      <block wx:if="{{enhancementHistory.length > 0}}">
+        <view class="mb-6">
+          <view class="flex justify-between items-center mb-4">
+            <text class="text-primary font-medium">历史增强</text>
+            <view class="text-sm text-blue-500" bindtap="viewAllHistory">查看全部</view>
+          </view>
+
+          <view class="grid grid-cols-2 gap-3">
+            <view wx:for="{{enhancementHistory}}" wx:key="id" wx:if="{{index < 4}}"
+                  class="bg-white rounded-xl overflow-hidden shadow-card"
+                  bindtap="viewHistoryImage"
+                  data-id="{{item.id}}">
+              <view class="relative">
+                <image src="{{item.enhancedUrl}}" mode="aspectFill" class="w-full h-32"></image>
+              </view>
+              <view class="p-2">
+                <view class="flex items-center justify-between">
+                  <text class="text-xxs text-secondary">{{wxs.formatDate(item.timestamp)}}</text>
+                  <text class="bg-blue-50 text-blue-500 text-xxs px-1-5 py-0-5 rounded-full">{{item.enhancementType}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- Bottom Padding -->
+      <view class="h-20"></view>
+    </view>
+  </scroll-view>
+</view>
+
+<!-- WXS Module for date formatting -->
+<wxs module="wxs">
+  function formatDate(timestamp) {
+    var date = getDate(timestamp);
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+    var hour = date.getHours();
+    var minute = date.getMinutes();
+
+    return month + '-' + day + ' ' + hour + ':' + (minute < 10 ? '0' + minute : minute);
+  }
+
+  module.exports = {
+    formatDate: formatDate
+  };
+</wxs>

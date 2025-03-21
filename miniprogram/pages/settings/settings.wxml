@@ -1,0 +1,57 @@
+<!--settings.wxml-->
+<view class="bg-page min-h-screen">
+  <!-- Custom Navigation Bar -->
+  <view class="px-4 py-6 flex items-center justify-between">
+    <view class="flex items-center">
+      <view class="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm mr-2" bindtap="goBack">
+        <image src="../../assets/icons/arrow-left.svg" class="w-5 h-5" mode="aspectFit"></image>
+      </view>
+      <text class="text-lg font-semibold text-primary">账户设置</text>
+    </view>
+  </view>
+
+  <scroll-view scroll-y="{{true}}" enhanced show-scrollbar="{{false}}">
+    <view class="px-4 pb-20">
+      <!-- Settings Groups -->
+      <view wx:for="{{settingsGroups}}" wx:key="id" wx:for-item="group" class="mb-6">
+        <text class="text-secondary text-sm font-medium mb-2 block">{{group.title}}</text>
+
+        <view class="bg-white rounded-2xl shadow-card overflow-hidden">
+          <view wx:for="{{group.items}}" wx:key="id"
+                class="flex items-center p-4 border-b border-gray-100 last-child-no-border {{item.isDestructive ? 'text-red-500' : 'text-primary'}}">
+
+            <!-- 普通标题 -->
+            <text class="flex-1">{{item.title}}</text>
+
+            <!-- 开关选项 -->
+            <switch wx:if="{{item.type === 'switch'}}"
+                    checked="{{item.value}}"
+                    color="#3B82F6"
+                    bindchange="handleSwitchChange"
+                    data-group-id="{{group.id}}"
+                    data-item-id="{{item.id}}"></switch>
+
+            <!-- 导航选项 -->
+            <view wx:if="{{item.type === 'navigation'}}"
+                  class="flex items-center"
+                  bindtap="navigateTo"
+                  data-url="{{item.url}}">
+              <image src="../../assets/icons/arrow-right.svg" class="w-4 h-4 opacity-40" mode="aspectFit"></image>
+            </view>
+
+            <!-- 按钮选项 -->
+            <view wx:if="{{item.type === 'button'}}"
+                  bindtap="handleButtonTap"
+                  data-item-id="{{item.id}}">
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- Version Info -->
+      <view class="flex flex-col items-center py-6">
+        <text class="text-secondary text-xs">版本 1.0.0</text>
+      </view>
+    </view>
+  </scroll-view>
+</view>

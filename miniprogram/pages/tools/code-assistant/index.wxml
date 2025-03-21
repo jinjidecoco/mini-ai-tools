@@ -1,0 +1,105 @@
+<!--pages/tools/code-assistant/index.wxml-->
+<view class="container">
+  <!-- Header Section -->
+  <view class="header">
+    <view class="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm mr-2" bindtap="goBack">
+      <image src="../../../assets/icons/arrow-left.svg" class="w-5 h-5" mode="aspectFit"></image>
+    </view>
+    <text class="title">AI代码助手</text>
+    <text class="subtitle">智能代码补全、优化和解释</text>
+  </view>
+
+  <!-- Code Input Section -->
+  <view class="code-input-section">
+    <text class="input-label">编程语言</text>
+    <view class="language-selector">
+      <view class="language-option {{language === 'javascript' ? 'selected' : ''}}"
+            bindtap="selectLanguage"
+            data-lang="javascript">
+        <text>JavaScript</text>
+      </view>
+      <view class="language-option {{language === 'python' ? 'selected' : ''}}"
+            bindtap="selectLanguage"
+            data-lang="python">
+        <text>Python</text>
+      </view>
+      <view class="language-option {{language === 'java' ? 'selected' : ''}}"
+            bindtap="selectLanguage"
+            data-lang="java">
+        <text>Java</text>
+      </view>
+      <view class="language-option {{language === 'csharp' ? 'selected' : ''}}"
+            bindtap="selectLanguage"
+            data-lang="csharp">
+        <text>C#</text>
+      </view>
+    </view>
+
+    <text class="input-label">代码输入</text>
+    <textarea class="code-textarea"
+              placeholder="输入您的代码..."
+              value="{{codeInput}}"
+              bindinput="onCodeInput"></textarea>
+
+    <text class="input-label">操作选择</text>
+    <view class="action-section">
+      <view class="action-button {{action === 'complete' ? 'primary-action' : ''}}"
+            bindtap="selectAction"
+            data-action="complete">
+        <text>代码补全</text>
+      </view>
+      <view class="action-button {{action === 'optimize' ? 'primary-action' : ''}}"
+            bindtap="selectAction"
+            data-action="optimize">
+        <text>代码优化</text>
+      </view>
+      <view class="action-button {{action === 'explain' ? 'primary-action' : ''}}"
+            bindtap="selectAction"
+            data-action="explain">
+        <text>代码解释</text>
+      </view>
+      <view class="action-button {{action === 'fix' ? 'primary-action' : ''}}"
+            bindtap="selectAction"
+            data-action="fix">
+        <text>修复问题</text>
+      </view>
+    </view>
+
+    <input class="instruction-input"
+           placeholder="输入特殊指令（可选）"
+           value="{{instruction}}"
+           bindinput="onInstructionInput"></input>
+
+    <view class="action-button primary-action" bindtap="processCode">
+      <text>执行操作</text>
+    </view>
+  </view>
+
+  <!-- Result Section -->
+  <view class="result-section" wx:if="{{resultCode || resultExplanation}}">
+    <view class="result-header">
+      <text class="result-title">{{action === 'explain' ? '代码解释' : '处理结果'}}</text>
+      <view class="copy-button" bindtap="copyResult">
+        <text>复制</text>
+      </view>
+    </view>
+
+    <view class="code-display" wx:if="{{resultCode}}">
+      <text class="code-content">{{resultCode}}</text>
+    </view>
+
+    <view class="explanation" wx:if="{{resultExplanation}}">
+      <text>{{resultExplanation}}</text>
+    </view>
+  </view>
+
+  <!-- Loading State -->
+  <view class="loading" wx:if="{{isProcessing}}">
+    <text>正在处理代码...</text>
+  </view>
+
+  <!-- Error Message -->
+  <view class="error" wx:if="{{errorMessage}}">
+    <text>{{errorMessage}}</text>
+  </view>
+</view>

@@ -1,0 +1,47 @@
+<!--pages/tools/document-analysis/index.wxml-->
+<view class="container">
+  <!-- Header Section -->
+  <view class="header">
+    <view class="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm mr-2" bindtap="goBack">
+      <image src="../../../assets/icons/arrow-left.svg" class="w-5 h-5" mode="aspectFit"></image>
+    </view>
+    <text class="title">AI文档分析</text>
+    <text class="subtitle">上传文档获取智能分析结果</text>
+  </view>
+
+  <!-- File Upload Section -->
+  <view class="file-upload-section">
+    <view class="upload-button" bindtap="chooseFile">
+      <text>选择文件</text>
+    </view>
+
+    <view class="file-info" wx:if="{{fileInfo}}">
+      <text class="file-name">{{fileInfo.name}}</text>
+      <text class="file-size">{{fileInfo.size}} KB</text>
+    </view>
+
+    <view class="analysis-button" bindtap="analyzeDocument" wx:if="{{fileInfo}}">
+      <text>分析文档</text>
+    </view>
+  </view>
+
+  <!-- Results Section -->
+  <view class="results-section" wx:if="{{analysisResults}}">
+    <text class="results-title">分析结果</text>
+
+    <view class="result-item" wx:for="{{analysisResults}}" wx:key="index">
+      <text class="result-key">{{item.key}}</text>
+      <text class="result-value">{{item.value}}</text>
+    </view>
+  </view>
+
+  <!-- Loading State -->
+  <view class="loading" wx:if="{{isAnalyzing}}">
+    <text>正在分析文档...</text>
+  </view>
+
+  <!-- Error Message -->
+  <view class="error" wx:if="{{errorMessage}}">
+    <text>{{errorMessage}}</text>
+  </view>
+</view>

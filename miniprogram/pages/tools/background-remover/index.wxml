@@ -1,0 +1,165 @@
+<!--去除背景工具-->
+<view class="container">
+  <!-- 顶部导航栏 -->
+  <view class="tool-navbar">
+    <view class="nav-back" bindtap="goBack">
+      <image src="../../../../assets/icons/arrow-left.svg" mode="aspectFit"></image>
+    </view>
+    <text class="nav-title">去除背景</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <!-- 主内容 -->
+  <view class="tool-content">
+    <!-- 图片选择区域 -->
+    <view class="upload-section" wx:if="{{!currentImage}}">
+      <view class="upload-card" bindtap="chooseImage">
+        <image class="upload-icon" src="../../../../assets/icons/upload-image.svg" mode="aspectFit"></image>
+        <text class="upload-text">点击选择图片</text>
+        <text class="upload-hint">支持PNG、JPG、JPEG格式</text>
+      </view>
+
+      <view class="tips-card" wx:if="{{showSettings}}">
+        <view class="tips-header">
+          <text class="tips-title">设置</text>
+          <view class="tips-close" bindtap="toggleSettings">
+            <image src="../../../../assets/icons/close.svg" mode="aspectFit"></image>
+          </view>
+        </view>
+        <view class="tips-content settings">
+          <view class="setting-item">
+            <text class="setting-label">精度选择</text>
+            <view class="setting-options">
+              <view class="option-button {{precision === 'high' ? 'active' : ''}}" bindtap="selectPrecision" data-precision="high">
+                <text>高精度</text>
+              </view>
+              <view class="option-button {{precision === 'medium' ? 'active' : ''}}" bindtap="selectPrecision" data-precision="medium">
+                <text>中等</text>
+              </view>
+              <view class="option-button {{precision === 'low' ? 'active' : ''}}" bindtap="selectPrecision" data-precision="low">
+                <text>快速</text>
+              </view>
+            </view>
+          </view>
+
+          <view class="setting-item">
+            <text class="setting-label">输出格式</text>
+            <view class="setting-options">
+              <view class="option-button {{resultFormat === 'png' ? 'active' : ''}}" bindtap="selectFormat" data-format="png">
+                <text>PNG</text>
+              </view>
+              <view class="option-button {{resultFormat === 'jpg' ? 'active' : ''}}" bindtap="selectFormat" data-format="jpg">
+                <text>JPG</text>
+              </view>
+            </view>
+          </view>
+
+          <view class="setting-item">
+            <text class="setting-label">背景设置</text>
+            <view class="setting-toggle">
+              <text>透明背景</text>
+              <switch checked="{{transparentBg}}" bindchange="toggleTransparent" color="#3B82F6"></switch>
+            </view>
+            <view class="color-picker" wx:if="{{!transparentBg}}">
+              <text>背景颜色：</text>
+              <view class="color-preview" style="background-color: {{customBgColor}};"></view>
+              <input type="color" value="{{customBgColor}}" bindchange="onBgColorChange"></input>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 图片处理区域 -->
+    <view class="process-section" wx:if="{{currentImage}}">
+      <view class="image-preview-container">
+        <view class="image-preview">
+          <image src="{{currentImage.path}}" mode="aspectFit"></image>
+          <view class="image-info">
+            <text>原始图片 · {{currentImage.size}}</text>
+          </view>
+        </view>
+
+        <view class="image-preview result" wx:if="{{processedImage}}">
+          <image src="{{processedImage.processedPath}}" mode="aspectFit"></image>
+          <view class="image-info">
+            <text>处理后 · 背景已移除</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 设置选项 -->
+      <view class="process-options" wx:if="{{!processedImage}}">
+        <view class="option-group">
+          <text class="option-title">精度选择</text>
+          <view class="option-buttons">
+            <view class="option-button {{precision === 'high' ? 'active' : ''}}" bindtap="selectPrecision" data-precision="high">
+              <text>高精度</text>
+            </view>
+            <view class="option-button {{precision === 'medium' ? 'active' : ''}}" bindtap="selectPrecision" data-precision="medium">
+              <text>中等</text>
+            </view>
+            <view class="option-button {{precision === 'low' ? 'active' : ''}}" bindtap="selectPrecision" data-precision="low">
+              <text>快速</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="option-group">
+          <text class="option-title">背景设置</text>
+          <view class="option-switch">
+            <text>透明背景</text>
+            <switch checked="{{transparentBg}}" bindchange="toggleTransparent" color="#3B82F6"></switch>
+          </view>
+          <view class="color-picker" wx:if="{{!transparentBg}}">
+            <text>背景颜色：</text>
+            <view class="color-preview" style="background-color: {{customBgColor}};"></view>
+            <input type="color" value="{{customBgColor}}" bindchange="onBgColorChange"></input>
+          </view>
+        </view>
+      </view>
+
+      <!-- 处理按钮和操作 -->
+      <view class="action-buttons">
+        <view class="action-button process" bindtap="processImage" wx:if="{{!processedImage}}">
+          <text>{{isProcessing ? '处理中...' : '去除背景'}}</text>
+        </view>
+
+        <view class="result-actions" wx:if="{{processedImage}}">
+          <view class="action-button secondary" bindtap="clearImage">
+            <image src="../../../../assets/icons/refresh.svg" mode="aspectFit"></image>
+            <text>重新选择</text>
+          </view>
+          <view class="action-button primary" bindtap="saveImage">
+            <image src="../../../../assets/icons/download.svg" mode="aspectFit"></image>
+            <text>保存图片</text>
+          </view>
+          <view class="action-button tertiary" bindtap="shareImage">
+            <image src="../../../../assets/icons/share.svg" mode="aspectFit"></image>
+            <text>分享</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 错误信息 -->
+      <view class="error-message" wx:if="{{errorMessage}}">
+        <text>{{errorMessage}}</text>
+      </view>
+    </view>
+
+    <!-- 历史记录 -->
+    <view class="history-section" wx:if="{{processedImages.length > 0}}">
+      <view class="section-header">
+        <text class="section-title">历史记录</text>
+      </view>
+      <scroll-view class="history-list" scroll-x enable-flex>
+        <view class="history-item" wx:for="{{processedImages}}" wx:key="id" bindtap="viewHistoryImage" data-id="{{item.id}}">
+          <image src="{{item.processedPath}}" mode="aspectFill"></image>
+          <view class="history-item-bg" wx:if="{{item.background !== 'transparent'}}">
+            <text>自定义背景</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+</view>

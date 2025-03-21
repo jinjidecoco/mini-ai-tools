@@ -1,0 +1,10 @@
+{
+  "navigationStyle": "custom",
+  "usingComponents": {},
+  "navigationBarTitleText": "AI数据可视化",
+  "enablePullDownRefresh": false,
+  "backgroundColor": "#f5f7fa",
+  "backgroundTextStyle": "dark",
+  "disableScroll": false,
+  "pageOrientation": "portrait"
+}

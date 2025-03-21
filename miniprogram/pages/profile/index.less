@@ -1,0 +1,226 @@
+/**profile index.less**/
+
+// 变量定义
+@primary-color: #3B82F6;
+@secondary-color: #10B981;
+@accent-color: #8B5CF6;
+@text-primary: #111827;
+@text-secondary: #6B7280;
+@bg-page: #F9FAFB;
+@white: #FFFFFF;
+@gray-50: #F9FAFB;
+@gray-100: #F3F4F6;
+@gray-200: #E5E7EB;
+@shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+// 基础页面样式
+page {
+  background-color: @bg-page;
+  height: 100%;
+  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  line-height: 1.6;
+}
+
+// 主容器
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: @bg-page;
+}
+
+// 头部用户信息
+.profile-header {
+  background-color: @primary-color;
+  padding: 40px 20px 30px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: @white;
+}
+
+.avatar-container {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid @white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+}
+
+.username {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.user-info {
+  font-size: 14px;
+  opacity: 0.9;
+  display: flex;
+  align-items: center;
+}
+
+.vip-badge {
+  background-color: #FFD700;
+  border-radius: 12px;
+  padding: 2px 8px;
+  margin-left: 8px;
+  color: #7B5800;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.vip-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+}
+
+// 用户统计
+.user-stats {
+  display: flex;
+  background-color: @white;
+  padding: 15px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 10px;
+  position: relative;
+}
+
+.stat-item:not(:last-child):after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 15%;
+  height: 70%;
+  width: 1px;
+  background-color: @gray-200;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: @text-primary;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: @text-secondary;
+}
+
+// 菜单列表
+.menu-section {
+  margin-top: 15px;
+  background-color: @white;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-left: 15px;
+  margin-right: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+  padding: 12px 15px;
+  font-size: 15px;
+  font-weight: 500;
+  color: @text-primary;
+  border-bottom: 1px solid @gray-100;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  position: relative;
+}
+
+.menu-item:not(:last-child):after {
+  content: '';
+  position: absolute;
+  left: 15px;
+  right: 15px;
+  bottom: 0;
+  height: 1px;
+  background-color: @gray-100;
+}
+
+.menu-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+}
+
+.menu-text {
+  flex: 1;
+  font-size: 15px;
+  color: @text-primary;
+}
+
+.menu-arrow {
+  width: 16px;
+  height: 16px;
+  opacity: 0.3;
+}
+
+.menu-badge {
+  background-color: #EF4444;
+  color: @white;
+  font-size: 12px;
+  border-radius: 12px;
+  padding: 2px 8px;
+  margin-right: 8px;
+}
+
+// 底部区域
+.bottom-section {
+  margin-top: 30px;
+  margin-bottom: 80px; // 为底部TabBar留出空间
+  padding: 0 15px;
+}
+
+.logout-button {
+  width: 100%;
+  background-color: @white;
+  color: #EF4444;
+  text-align: center;
+  padding: 12px 0;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.app-version {
+  text-align: center;
+  font-size: 12px;
+  color: @text-secondary;
+  margin-top: 15px;
+}
+
+// 通用工具类
+.shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+// 修复滚动条
+::-webkit-scrollbar {
+  display: none;
+}

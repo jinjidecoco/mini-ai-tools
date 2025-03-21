@@ -1,0 +1,106 @@
+<!--pages/tools/schedule-planner/index.wxml-->
+<view class="container">
+  <!-- Header Section -->
+  <view class="header">
+    <view class="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm mr-2" bindtap="goBack">
+      <image src="../../../assets/icons/arrow-left.svg" class="w-5 h-5" mode="aspectFit"></image>
+    </view>
+    <text class="title">AI日程规划</text>
+    <text class="subtitle">智能规划您的日程安排</text>
+  </view>
+
+  <!-- Calendar Section -->
+  <view class="calendar-section">
+    <view class="calendar-header">
+      <text class="current-month">2023年3月</text>
+      <view class="month-navigation">
+        <view class="month-navigation-button" bindtap="previousMonth">
+          <text>◀</text>
+        </view>
+        <view class="month-navigation-button" bindtap="nextMonth">
+          <text>▶</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="weekdays">
+      <text class="weekday">日</text>
+      <text class="weekday">一</text>
+      <text class="weekday">二</text>
+      <text class="weekday">三</text>
+      <text class="weekday">四</text>
+      <text class="weekday">五</text>
+      <text class="weekday">六</text>
+    </view>
+
+    <view class="calendar-grid">
+      <!-- Calendar Days -->
+      <view class="calendar-day current-month today has-events" bindtap="selectDate" data-date="2023-03-15">
+        <text>15</text>
+      </view>
+      <!-- More calendar days would be rendered here -->
+    </view>
+  </view>
+
+  <!-- Events Section -->
+  <view class="events-section">
+    <view class="events-header">
+      <text class="events-title">3月15日 星期三</text>
+      <view class="add-event-button" bindtap="showAddEventForm">
+        <text>添加事件</text>
+      </view>
+    </view>
+
+    <view class="events-list">
+      <view class="event-item" wx:if="{{events && events.length}}">
+        <text class="event-time">09:00 - 10:30</text>
+        <text class="event-title">项目会议</text>
+        <text class="event-description">讨论新功能开发计划</text>
+        <view class="event-actions">
+          <text class="event-action" bindtap="editEvent" data-id="1">编辑</text>
+          <text class="event-action" bindtap="deleteEvent" data-id="1">删除</text>
+        </view>
+      </view>
+
+      <view class="no-events" wx:else>
+        <text>今天没有安排事件</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Event Form (hidden by default) -->
+  <view class="event-form" wx:if="{{showEventForm}}">
+    <view class="form-group">
+      <text class="form-label">事件标题</text>
+      <input class="form-input" placeholder="输入事件标题" value="{{eventForm.title}}" bindinput="onEventTitleInput" />
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">开始时间</text>
+      <picker mode="time" value="{{eventForm.startTime}}" bindchange="onStartTimeChange">
+        <view class="form-input">{{eventForm.startTime || '选择时间'}}</view>
+      </picker>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">结束时间</text>
+      <picker mode="time" value="{{eventForm.endTime}}" bindchange="onEndTimeChange">
+        <view class="form-input">{{eventForm.endTime || '选择时间'}}</view>
+      </picker>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">描述</text>
+      <textarea class="form-textarea" placeholder="输入事件描述" value="{{eventForm.description}}" bindinput="onEventDescriptionInput"></textarea>
+    </view>
+
+    <view class="form-actions">
+      <view class="form-button cancel-button" bindtap="cancelEventForm">
+        <text>取消</text>
+      </view>
+      <view class="form-button save-button" bindtap="saveEvent">
+        <text>保存</text>
+      </view>
+    </view>
+  </view>
+</view>

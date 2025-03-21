@@ -1,0 +1,7 @@
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "账户设置",
+  "navigationStyle": "custom",
+  "disableScroll": false,
+  "enablePullDownRefresh": false
+}

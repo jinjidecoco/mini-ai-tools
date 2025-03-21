@@ -1,0 +1,259 @@
+/**index.wxss**/
+page {
+  background-color: #F9FAFB;
+  height: 100%;
+  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  line-height: 1.6;
+  --primary-color: #3B82F6;
+  --secondary-color: #10B981;
+  --accent-color: #8B5CF6;
+  --text-primary: #111827;
+  --text-secondary: #6B7280;
+  --bg-page: #F9FAFB;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.container {
+  padding: 20rpx;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: 20rpx 0;
+  margin-bottom: 30rpx;
+}
+
+.title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  margin-top: 10rpx;
+}
+
+.code-input-section {
+  background-color: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 30rpx;
+}
+
+.input-label {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 10rpx;
+}
+
+.language-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+  margin: 20rpx 0;
+}
+
+.language-option {
+  flex: 1;
+  min-width: 140rpx;
+  padding: 16rpx;
+  background-color: #EFF6FF;
+  border-radius: 8rpx;
+  text-align: center;
+  font-size: 26rpx;
+  font-weight: 500;
+  color: var(--primary-color);
+}
+
+.language-option.selected {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.code-textarea {
+  width: 100%;
+  min-height: 240rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+  border: 1px solid #E5E7EB;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  line-height: 1.5;
+  margin-bottom: 20rpx;
+  background-color: #F8FAFC;
+}
+
+.action-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin: 20rpx 0;
+}
+
+.action-button {
+  flex: 1;
+  min-width: 200rpx;
+  background-color: #EFF6FF;
+  color: var(--primary-color);
+  border-radius: 8rpx;
+  padding: 16rpx;
+  text-align: center;
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+.primary-action {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.instruction-input {
+  width: 100%;
+  padding: 20rpx;
+  box-sizing: border-box;
+  border: 1px solid #E5E7EB;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  margin-top: 20rpx;
+}
+
+.result-section {
+  background-color: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: var(--card-shadow);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.result-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.copy-button {
+  font-size: 24rpx;
+  color: var(--primary-color);
+  padding: 8rpx 16rpx;
+  background-color: #EFF6FF;
+  border-radius: 6rpx;
+}
+
+.code-display {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #1E293B;
+  border-radius: 8rpx;
+  padding: 20rpx;
+  position: relative;
+}
+
+.code-content {
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  font-size: 26rpx;
+  line-height: 1.5;
+  color: #E2E8F0;
+  white-space: pre;
+}
+
+.explanation {
+  margin-top: 20rpx;
+  padding: 20rpx;
+  background-color: #F0FDF4;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  color: var(--text-primary);
+}
+
+.loading {
+  text-align: center;
+  padding: 40rpx 0;
+  color: var(--text-secondary);
+}
+
+.error {
+  color: #EF4444;
+  padding: 20rpx;
+  background-color: #FEF2F2;
+  border-radius: 8rpx;
+  margin-top: 20rpx;
+}
+
+/* Syntax highlighting */
+.keyword {
+  color: #F472B6;
+}
+
+.string {
+  color: #A5D6FF;
+}
+
+.comment {
+  color: #71717A;
+  font-style: italic;
+}
+
+.function {
+  color: #7DD3FC;
+}
+
+.number {
+  color: #FFA657;
+}
+
+/* Utility classes */
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.bg-primary {
+  background-color: var(--primary-color);
+}
+
+.bg-secondary {
+  background-color: var(--secondary-color);
+}
+
+.bg-accent {
+  background-color: var(--accent-color);
+}
+
+.bg-page {
+  background-color: var(--bg-page);
+}
+
+.shadow-card {
+  box-shadow: var(--card-shadow);
+}
+
+/* Fix for scrollbar */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Animation for active state */
+.scale-on-active:active {
+  transform: scale(0.98);
+}

@@ -1,0 +1,8 @@
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "Mini工具",
+  "navigationStyle": "custom",
+  "disableScroll": false,
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#f9fafb"
+}

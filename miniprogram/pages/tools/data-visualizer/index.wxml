@@ -1,0 +1,81 @@
+<!--pages/tools/data-visualizer/index.wxml-->
+<view class="container">
+  <!-- Header Section -->
+  <view class="header">
+    <view class="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm mr-2" bindtap="goBack">
+      <image src="../../../assets/icons/arrow-left.svg" class="w-5 h-5" mode="aspectFit"></image>
+    </view>
+    <text class="title">AI数据可视化</text>
+    <text class="subtitle">输入数据生成直观的图表</text>
+  </view>
+
+  <!-- Data Input Section -->
+  <view class="data-input-section">
+    <text class="input-label">数据输入</text>
+    <textarea class="data-textarea"
+              placeholder="请输入CSV格式数据或JSON数据..."
+              value="{{inputData}}"
+              bindinput="onDataInput"></textarea>
+    <text class="input-hint">支持CSV、JSON格式，例如: [{"name":"A", "value":10}, {"name":"B", "value":20}]</text>
+
+    <!-- Chart Type Selector -->
+    <text class="input-label">图表类型</text>
+    <view class="chart-type-selector">
+      <view class="chart-type-option {{chartType === 'bar' ? 'selected' : ''}}"
+            bindtap="selectChartType"
+            data-type="bar">
+        <text>柱状图</text>
+      </view>
+      <view class="chart-type-option {{chartType === 'line' ? 'selected' : ''}}"
+            bindtap="selectChartType"
+            data-type="line">
+        <text>折线图</text>
+      </view>
+      <view class="chart-type-option {{chartType === 'pie' ? 'selected' : ''}}"
+            bindtap="selectChartType"
+            data-type="pie">
+        <text>饼图</text>
+      </view>
+      <view class="chart-type-option {{chartType === 'scatter' ? 'selected' : ''}}"
+            bindtap="selectChartType"
+            data-type="scatter">
+        <text>散点图</text>
+      </view>
+    </view>
+
+    <!-- Visualize Button -->
+    <view class="visualize-button" bindtap="visualizeData">
+      <text>生成图表</text>
+    </view>
+  </view>
+
+  <!-- Chart Section -->
+  <view class="chart-section" wx:if="{{chartData}}">
+    <text class="chart-title">数据可视化结果</text>
+
+    <view class="chart-container">
+      <!-- Chart will be rendered here -->
+      <text wx:if="{{!chartData}}">请先输入数据并选择图表类型</text>
+    </view>
+
+    <!-- Export Options -->
+    <view class="export-section">
+      <view class="export-button" bindtap="saveAsImage">
+        <text>保存为图片</text>
+      </view>
+      <view class="export-button" bindtap="shareChart">
+        <text>分享</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Loading State -->
+  <view class="loading" wx:if="{{isVisualizing}}">
+    <text>正在生成图表...</text>
+  </view>
+
+  <!-- Error Message -->
+  <view class="error" wx:if="{{errorMessage}}">
+    <text>{{errorMessage}}</text>
+  </view>
+</view>

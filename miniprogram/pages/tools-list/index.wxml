@@ -1,0 +1,35 @@
+<view class="container">
+  <!-- 导航栏 -->
+  <view class="navbar">
+    <view class="nav-back" bindtap="navigateBack">
+      <view class="back-icon"></view>
+    </view>
+    <view class="nav-title">所有工具</view>
+  </view>
+
+  <!-- 分类和工具列表 -->
+  <view class="categories">
+    <view class="category" wx:for="{{categories}}" wx:key="id">
+      <view class="category-header">
+        <view class="category-icon">
+          <image src="{{item.icon}}" mode="aspectFit"></image>
+        </view>
+        <view class="category-name">{{item.name}}</view>
+      </view>
+
+      <view class="tools-grid">
+        <view class="tool-item"
+              wx:for="{{item.tools}}"
+              wx:for-item="tool"
+              wx:key="id"
+              bindtap="handleToolClick"
+              data-url="{{tool.url}}">
+          <view class="tool-icon" style="background-color: {{tool.color}}">
+            <image src="{{tool.icon}}" mode="aspectFit"></image>
+          </view>
+          <view class="tool-name">{{tool.name}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

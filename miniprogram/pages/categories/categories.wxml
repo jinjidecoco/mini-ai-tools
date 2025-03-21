@@ -1,0 +1,125 @@
+<!--categories.wxml-->
+<view class="bg-page min-h-screen">
+  <!-- Custom Navigation Bar -->
+  <view class="px-4 py-6 flex items-center justify-between">
+    <view class="flex items-center">
+      <image src="https://images.unsplash.com/photo-1677442135586-85c6202cc8be?q=80&w=32&auto=format&fit=crop"
+             class="w-8 h-8 rounded-lg shadow-sm" mode="aspectFill"></image>
+      <text class="ml-2 text-lg font-semibold text-primary">AI工具分类</text>
+    </view>
+    <view class="flex items-center">
+      <view class="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm">
+        <image src="../../assets/icons/notification.svg" class="w-5 h-5" mode="aspectFit"></image>
+      </view>
+    </view>
+  </view>
+
+  <!-- Search Bar -->
+  <view class="px-4 mb-6">
+    <view class="bg-white rounded-xl flex items-center px-4 py-2 shadow-sm">
+      <image src="../../assets/icons/search.svg" class="w-5 h-5 opacity-60" mode="aspectFit"></image>
+      <input type="text" class="flex-1 ml-2 text-primary text-sm" placeholder="搜索AI工具..."
+             value="{{searchValue}}" bindinput="onSearchInput" confirm-type="search" />
+      <view class="rounded-full bg-gray-100 w-5 h-5 flex items-center justify-center"
+            wx:if="{{isSearching}}" bindtap="clearSearch">
+        <text class="text-xs text-secondary">×</text>
+      </view>
+    </view>
+  </view>
+
+  <block wx:if="{{isSearching}}">
+    <!-- Search Results -->
+    <view class="px-4">
+      <view class="mb-4">
+        <text class="text-secondary text-sm">搜索结果: {{searchResults.length}} 个工具</text>
+      </view>
+
+      <view class="space-y-3" wx:if="{{searchResults.length > 0}}">
+        <view wx:for="{{searchResults}}" wx:key="id"
+              class="bg-white rounded-xl p-4 shadow-card flex"
+              bindtap="navigateToTool" data-url="{{item.url}}">
+          <view class="w-10 h-10 rounded-lg mr-3 flex items-center justify-center {{item.bgColor || 'bg-blue-50'}}">
+            <image src="{{item.icon}}" class="w-6 h-6" mode="aspectFit"></image>
+          </view>
+          <view class="flex-1">
+            <view class="flex items-center">
+              <text class="font-semibold text-primary">{{item.name}}</text>
+              <text wx:if="{{item.isHot}}" class="ml-2 px-1-5 py-0-5 bg-red-50 text-red-500 text-xxs rounded-full">热门</text>
+              <text wx:if="{{item.isNew}}" class="ml-2 px-1-5 py-0-5 bg-green-50 text-green-500 text-xxs rounded-full">新</text>
+            </view>
+            <text class="text-xs text-secondary block mt-1">{{item.description}}</text>
+            <text class="text-xxs text-gray-400 mt-2 block">分类: {{item.categoryName}}</text>
+          </view>
+          <view class="ml-3 self-center">
+            <image src="../../assets/icons/arrow-right.svg" class="w-4 h-4 opacity-40" mode="aspectFit"></image>
+          </view>
+        </view>
+      </view>
+
+      <view class="flex flex-col items-center justify-center py-10" wx:else>
+        <image src="https://images.unsplash.com/photo-1594322436404-5a0526db4d13?q=80&w=100&auto=format&fit=crop"
+               class="w-20 h-20 opacity-50 mb-4" mode="aspectFill"></image>
+        <text class="text-secondary">未找到相关工具</text>
+      </view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <!-- Categories and Tools -->
+    <view class="flex">
+      <!-- Category Sidebar -->
+      <scroll-view scroll-y="{{true}}" class="w-quarter h-screen" enhanced show-scrollbar="{{false}}">
+        <view class="px-2 space-y-2">
+          <view wx:for="{{categories}}" wx:key="id"
+                class="py-3 px-2 rounded-lg text-center mb-1 {{activeCategory === item.id ? 'bg-primary text-white' : 'bg-transparent text-secondary'}}"
+                bindtap="switchCategory" data-id="{{item.id}}">
+            <text class="text-sm {{activeCategory === item.id ? 'text-white font-medium' : 'text-secondary'}}">{{item.name}}</text>
+          </view>
+        </view>
+      </scroll-view>
+
+      <!-- Tool List for Selected Category -->
+      <scroll-view scroll-y="{{true}}" class="w-three-quarter h-screen pb-20" refresher-enabled="{{true}}"
+                 refresher-threshold="{{80}}" bindrefresherrefresh="onPullDownRefresh"
+                 refresher-default-style="black" refresher-background="#F9FAFB"
+                 enhanced show-scrollbar="{{false}}">
+        <view class="px-4 py-2">
+          <view wx:for="{{categories}}" wx:key="id" wx:if="{{activeCategory === item.id || activeCategory === 0}}">
+            <block wx:if="{{activeCategory === 0}}">
+              <view class="flex items-center mt-4 mb-3" wx:if="{{index !== 0}}">
+                <view class="w-8 h-8 rounded-lg flex items-center justify-center {{item.bgColor}} mr-2">
+                  <image src="{{item.icon}}" class="w-5 h-5" mode="aspectFit"></image>
+                </view>
+                <text class="text-primary font-medium">{{item.name}}</text>
+              </view>
+            </block>
+
+            <view class="space-y-3 mb-6">
+              <view wx:for="{{item.tools}}" wx:key="id" wx:for-item="tool"
+                    class="bg-white rounded-xl p-4 shadow-card flex"
+                    bindtap="navigateToTool" data-url="{{tool.url}}">
+                <view class="w-10 h-10 rounded-lg mr-3 flex items-center justify-center {{item.bgColor}}">
+                  <image src="{{tool.icon}}" class="w-6 h-6" mode="aspectFit"></image>
+                </view>
+                <view class="flex-1">
+                  <view class="flex items-center">
+                    <text class="font-semibold text-primary">{{tool.name}}</text>
+                    <text wx:if="{{tool.isHot}}" class="ml-2 px-1-5 py-0-5 bg-red-50 text-red-500 text-xxs rounded-full">热门</text>
+                    <text wx:if="{{tool.isNew}}" class="ml-2 px-1-5 py-0-5 bg-green-50 text-green-500 text-xxs rounded-full">新</text>
+                  </view>
+                  <text class="text-xs text-secondary block mt-1">{{tool.description}}</text>
+                </view>
+                <view class="ml-3 self-center">
+                  <image src="../../assets/icons/arrow-right.svg" class="w-4 h-4 opacity-40" mode="aspectFit"></image>
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- Bottom Padding for Tab Bar -->
+          <view class="h-20"></view>
+        </view>
+      </scroll-view>
+    </view>
+  </block>
+</view>

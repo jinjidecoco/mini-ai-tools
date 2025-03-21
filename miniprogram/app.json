@@ -1,0 +1,68 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/categories/index",
+    "pages/profile/index",
+    "pages/tools/text-generation/index",
+    "pages/tools/image-enhancement/index",
+    "pages/tools/voice-transcription/index",
+    "pages/tools/document-analysis/index",
+    "pages/tools/code-assistant/index",
+    "pages/tools/schedule-planner/index",
+    "pages/tools/language-translator/index",
+    "pages/tools/data-visualizer/index",
+    "pages/settings/settings",
+    "pages/logs/logs",
+    "pages/tools/watermark-remover/index",
+    "pages/tools/voice-to-text/index",
+    "pages/tools/homework-checker/index",
+    "pages/tools/qrcode-generator/index",
+    "/pages/tools/background-remover/index"
+
+
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationStyle": "custom",
+    "backgroundColor": "#F9FAFB"
+  },
+  "style": "v2",
+  "rendererOptions": {
+    "skyline": {
+      "defaultDisplayBlock": true,
+      "disableABTest": true,
+      "sdkVersionBegin": "3.0.0",
+      "sdkVersionEnd": "15.255.255"
+    }
+  },
+  "tabBar": {
+    "custom": false,
+    "color": "#6B7280",
+    "selectedColor": "#3B82F6",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "assets/icons/home.png",
+        "selectedIconPath": "assets/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/categories/index",
+        "text": "分类",
+        "iconPath": "assets/icons/category.png",
+        "selectedIconPath": "assets/icons/category-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "assets/icons/profile.png",
+        "selectedIconPath": "assets/icons/profile-active.png"
+      }
+    ]
+  },
+  "componentFramework": "glass-easel",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

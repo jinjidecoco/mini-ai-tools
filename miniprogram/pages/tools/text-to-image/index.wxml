@@ -1,0 +1,163 @@
+<!--index.wxml-->
+<view class="bg-page min-h-screen">
+  <!-- Custom Navigation Bar -->
+  <view class="px-4 py-6 flex items-center justify-between">
+    <view class="flex items-center">
+      <view class="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm mr-2" bindtap="goBack">
+        <image src="../../../assets/icons/arrow-left.svg" class="w-5 h-5" mode="aspectFit"></image>
+      </view>
+      <text class="text-lg font-semibold text-primary">AI文本生成图像</text>
+    </view>
+  </view>
+
+  <scroll-view scroll-y="{{true}}" enhanced show-scrollbar="{{false}}" class="pb-20">
+    <view class="px-4">
+      <!-- Text Input Section -->
+      <view class="bg-white rounded-2xl shadow-card mb-6">
+        <view class="p-4">
+          <text class="text-primary font-medium mb-2 block">输入图像描述</text>
+          <view class="relative">
+            <textarea class="w-full h-32 bg-gray-50 rounded-xl p-3 text-sm text-primary"
+                      placeholder="请输入详细的图像描述，例如：'一只卡通风格的橙色猫咪在阳光明媚的花园中玩耍...'"
+                      value="{{prompt}}"
+                      bindinput="onPromptInput"
+                      maxlength="500"
+                      auto-height></textarea>
+            <view class="absolute right-2 bottom-2 text-xs text-secondary">
+              {{prompt.length}}/500
+            </view>
+          </view>
+          <view class="flex justify-end mt-2">
+            <view class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center" bindtap="clearPrompt">
+              <image src="../../../assets/icons/close.svg" class="w-4 h-4 opacity-40" mode="aspectFit"></image>
+            </view>
+          </view>
+        </view>
+
+        <!-- Style Options -->
+        <view class="px-4 pb-4">
+          <text class="text-primary font-medium mb-2 block">选择图像风格</text>
+          <scroll-view scroll-x="{{true}}" class="whitespace-nowrap -mx-1 px-1" enhanced show-scrollbar="{{false}}">
+            <view wx:for="{{imageStyles}}" wx:key="id"
+                  class="inline-block mr-2 p-3 {{selectedStyle === item.id ? 'bg-blue-500 text-white' : 'bg-gray-50 text-primary'}} rounded-xl w-32"
+                  bindtap="selectStyle"
+                  data-id="{{item.id}}">
+              <view class="flex flex-col items-center">
+                <image src="{{item.icon}}" class="w-8 h-8 mb-1" mode="aspectFit"></image>
+                <text class="text-xs {{selectedStyle === item.id ? 'text-white' : 'text-primary'}} font-medium">{{item.name}}</text>
+                <text class="text-xxs {{selectedStyle === item.id ? 'text-white opacity-80' : 'text-secondary'}} truncate block">{{item.description}}</text>
+              </view>
+            </view>
+          </scroll-view>
+        </view>
+
+        <!-- Aspect Ratio Selection -->
+        <view class="px-4 pb-4">
+          <text class="text-primary font-medium mb-2 block">图像比例</text>
+          <view class="flex space-x-2">
+            <view wx:for="{{ratios}}" wx:key="id"
+                  class="flex-1 py-2 {{selectedRatio === item.id ? 'bg-blue-500 text-white' : 'bg-gray-50 text-primary'}} rounded-xl text-center"
+                  bindtap="selectRatio"
+                  data-id="{{item.id}}">
+              <text class="text-sm {{selectedRatio === item.id ? 'text-white' : 'text-primary'}}">{{item.name}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- Generate Button -->
+      <view class="mb-6">
+        <button class="w-full py-3 bg-blue-500 text-white rounded-xl flex items-center justify-center"
+                bindtap="generateImage"
+                disabled="{{isGenerating || !prompt}}">
+          <text wx:if="{{!isGenerating}}">生成图像</text>
+          <view wx:else class="flex items-center">
+            <text class="mr-2">生成中</text>
+            <view class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></view>
+          </view>
+        </button>
+      </view>
+
+      <!-- Result Section -->
+      <block wx:if="{{generatedImageUrl}}">
+        <view class="bg-white rounded-2xl shadow-card mb-6 overflow-hidden">
+          <!-- Result Image -->
+          <view class="relative">
+            <image src="{{generatedImageUrl}}"
+                   mode="widthFix"
+                   class="w-full rounded-t-2xl"
+                   bindtap="previewImage"></image>
+            <view class="absolute top-2 right-2 flex space-x-2">
+              <view class="w-8 h-8 rounded-full bg-white bg-opacity-80 flex items-center justify-center shadow-sm" bindtap="saveImage">
+                <image src="../../../assets/icons/download.svg" class="w-4 h-4" mode="aspectFit"></image>
+              </view>
+              <view class="w-8 h-8 rounded-full bg-white bg-opacity-80 flex items-center justify-center shadow-sm" bindtap="shareImage">
+                <image src="../../../assets/icons/share.svg" class="w-4 h-4" mode="aspectFit"></image>
+              </view>
+            </view>
+          </view>
+
+          <!-- Image Info -->
+          <view class="p-4">
+            <view class="flex items-center justify-between">
+              <view class="flex items-center">
+                <text class="bg-blue-50 text-blue-500 text-xxs px-2 py-1 rounded-full">{{imageStyles.find(style => style.id === selectedStyle).name}}</text>
+                <text class="bg-gray-50 text-secondary text-xxs px-2 py-1 rounded-full ml-2">{{ratios.find(ratio => ratio.id === selectedRatio).name}}</text>
+              </view>
+              <text class="text-xxs text-secondary">{{wxs.formatDate(generationTime)}}</text>
+            </view>
+
+            <view class="mt-2 bg-gray-50 rounded-xl p-3">
+              <text class="text-xs text-secondary line-clamp-2">{{prompt}}</text>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- History Section -->
+      <block wx:if="{{imageHistory.length > 0}}">
+        <view class="mb-6">
+          <view class="flex justify-between items-center mb-4">
+            <text class="text-primary font-medium">历史生成</text>
+            <view class="text-sm text-blue-500" bindtap="viewAllHistory">查看全部</view>
+          </view>
+
+          <view class="grid grid-cols-2 gap-3">
+            <view wx:for="{{imageHistory}}" wx:key="id" wx:if="{{index < 4}}"
+                  class="bg-white rounded-xl overflow-hidden shadow-card"
+                  bindtap="viewHistoryImage"
+                  data-id="{{item.id}}">
+              <image src="{{item.imageUrl}}" mode="aspectFill" class="w-full h-32 rounded-t-xl"></image>
+              <view class="p-2">
+                <view class="flex items-center justify-between">
+                  <text class="text-xxs text-secondary">{{wxs.formatDate(item.timestamp)}}</text>
+                  <text class="bg-blue-50 text-blue-500 text-xxs px-1-5 py-0-5 rounded-full">{{item.style}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- Bottom Padding -->
+      <view class="h-20"></view>
+    </view>
+  </scroll-view>
+</view>
+
+<!-- WXS Module for date formatting -->
+<wxs module="wxs">
+  function formatDate(timestamp) {
+    var date = getDate(timestamp);
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+    var hour = date.getHours();
+    var minute = date.getMinutes();
+
+    return month + '-' + day + ' ' + hour + ':' + (minute < 10 ? '0' + minute : minute);
+  }
+
+  module.exports = {
+    formatDate: formatDate
+  };
+</wxs>

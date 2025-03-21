@@ -1,0 +1,195 @@
+<!--text-generation/index.wxml-->
+<view class="container">
+  <!-- 顶部导航栏 -->
+  <view class="tool-navbar">
+    <view class="nav-back" bindtap="navigateBack">
+      <image src="../../../../assets/icons/arrow-left.svg" mode="aspectFit"></image>
+    </view>
+    <text class="nav-title">文本生成</text>
+    <view class="nav-action" bindtap="showSettings" wx:if="{{!showSettings}}">
+      <image src="../../../../assets/icons/settings.svg" mode="aspectFit"></image>
+    </view>
+    <view class="nav-action" wx:else></view>
+  </view>
+
+  <view class="tool-content">
+    <!-- 输入部分 -->
+    <view class="input-section">
+      <view class="prompt-input-container">
+        <textarea class="prompt-input"
+          placeholder="请输入您想要生成的内容描述..."
+          placeholder-class="placeholder"
+          value="{{promptText}}"
+          bindinput="onPromptInput"
+          auto-height
+          maxlength="500"
+          show-confirm-bar="{{false}}"></textarea>
+        <view class="input-actions">
+          <view class="char-count {{promptText.length > 450 ? 'near-limit' : ''}}">
+            {{promptText.length}}/500
+          </view>
+          <view class="clear-btn" bindtap="clearPrompt" wx:if="{{promptText.length > 0}}">
+            <image src="../../../../assets/icons/close-circle.svg" mode="aspectFit"></image>
+          </view>
+        </view>
+      </view>
+
+      <!-- 设置面板 -->
+      <view class="settings-panel" wx:if="{{showSettings}}">
+        <view class="panel-header">
+          <text class="panel-title">生成设置</text>
+          <view class="panel-close" bindtap="hideSettings">
+            <image src="../../../../assets/icons/close.svg" mode="aspectFit"></image>
+          </view>
+        </view>
+
+        <view class="setting-item">
+          <text class="setting-label">文本类型</text>
+          <view class="setting-options">
+            <view class="option-button {{textType === 'article' ? 'active' : ''}}"
+                  bindtap="setTextType" data-type="article">
+              <text>文章</text>
+            </view>
+            <view class="option-button {{textType === 'summary' ? 'active' : ''}}"
+                  bindtap="setTextType" data-type="summary">
+              <text>摘要</text>
+            </view>
+            <view class="option-button {{textType === 'creative' ? 'active' : ''}}"
+                  bindtap="setTextType" data-type="creative">
+              <text>创意文本</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="setting-item">
+          <text class="setting-label">文本长度</text>
+          <view class="setting-options">
+            <view class="option-button {{textLength === 'short' ? 'active' : ''}}"
+                  bindtap="setTextLength" data-length="short">
+              <text>短</text>
+            </view>
+            <view class="option-button {{textLength === 'medium' ? 'active' : ''}}"
+                  bindtap="setTextLength" data-length="medium">
+              <text>中</text>
+            </view>
+            <view class="option-button {{textLength === 'long' ? 'active' : ''}}"
+                  bindtap="setTextLength" data-length="long">
+              <text>长</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="setting-item">
+          <text class="setting-label">语言风格</text>
+          <view class="setting-options">
+            <view class="option-button {{textStyle === 'formal' ? 'active' : ''}}"
+                  bindtap="setTextStyle" data-style="formal">
+              <text>正式</text>
+            </view>
+            <view class="option-button {{textStyle === 'casual' ? 'active' : ''}}"
+                  bindtap="setTextStyle" data-style="casual">
+              <text>日常</text>
+            </view>
+            <view class="option-button {{textStyle === 'professional' ? 'active' : ''}}"
+                  bindtap="setTextStyle" data-style="professional">
+              <text>专业</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 生成按钮 -->
+      <view class="generate-button {{isGenerating || !promptText ? 'disabled' : ''}}"
+            bindtap="{{isGenerating || !promptText ? '' : 'generateText'}}">
+        <text>{{isGenerating ? '生成中...' : '生成文本'}}</text>
+      </view>
+
+      <!-- 提示模板 -->
+      <view class="prompt-examples" wx:if="{{!resultText && !isGenerating}}">
+        <view class="examples-title">可尝试以下内容</view>
+        <view class="examples-list">
+          <view class="example-item" bindtap="usePromptExample" data-prompt="写一篇关于人工智能在医疗领域应用的文章">
+            <text>写一篇关于人工智能在医疗领域应用的文章</text>
+          </view>
+          <view class="example-item" bindtap="usePromptExample" data-prompt="帮我总结一下光合作用的过程和意义">
+            <text>帮我总结一下光合作用的过程和意义</text>
+          </view>
+          <view class="example-item" bindtap="usePromptExample" data-prompt="创作一首关于春天的诗歌">
+            <text>创作一首关于春天的诗歌</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 结果部分 -->
+    <view class="result-section" wx:if="{{resultText || isGenerating}}">
+      <view class="result-header">
+        <text class="result-title">生成结果</text>
+        <view class="result-actions">
+          <view class="result-action" bindtap="copyResult" wx:if="{{resultText}}">
+            <image src="../../../../assets/icons/copy.svg" mode="aspectFit"></image>
+          </view>
+          <view class="result-action" bindtap="clearResult" wx:if="{{resultText}}">
+            <image src="../../../../assets/icons/refresh.svg" mode="aspectFit"></image>
+          </view>
+        </view>
+      </view>
+
+      <view class="result-content">
+        <view class="loading-spinner" wx:if="{{isGenerating}}"></view>
+        <text class="result-text" wx:else>{{resultText}}</text>
+      </view>
+
+      <view class="action-buttons" wx:if="{{resultText}}">
+        <view class="action-button secondary" bindtap="regenerateText">
+          <image src="../../../../assets/icons/refresh.svg" mode="aspectFit"></image>
+          <text>重新生成</text>
+        </view>
+        <view class="action-button primary" bindtap="saveToHistory">
+          <image src="../../../../assets/icons/save.svg" mode="aspectFit"></image>
+          <text>保存结果</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 历史记录 -->
+    <view class="history-section" wx:if="{{history.length > 0 && !isGenerating && !resultText}}">
+      <view class="section-header">
+        <text class="section-title">历史记录</text>
+        <text class="section-action" bindtap="clearHistory">清空</text>
+      </view>
+
+      <view class="vertical-history-list">
+        <view class="history-item" wx:for="{{history}}" wx:key="id" bindtap="viewHistoryItem" data-id="{{item.id}}">
+          <view class="history-icon">
+            <image src="../../../../assets/icons/text-tool.svg" mode="aspectFit"></image>
+          </view>
+          <view class="history-content">
+            <text class="history-title">{{item.prompt}}</text>
+            <text class="history-date">{{item.date}}</text>
+          </view>
+          <view class="history-action" catchtap="deleteHistoryItem" data-id="{{item.id}}">
+            <image src="../../../../assets/icons/delete.svg" mode="aspectFit"></image>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- WXS Module for date formatting -->
+<wxs module="wxs">
+  function formatDate(timestamp) {
+    var date = getDate(timestamp);
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+    var hour = date.getHours();
+    var minute = date.getMinutes();
+
+    return month + '-' + day + ' ' + hour + ':' + (minute < 10 ? '0' + minute : minute);
+  }
+
+  module.exports = {
+    formatDate: formatDate
+  };
+</wxs>

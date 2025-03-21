@@ -1,0 +1,179 @@
+<!--voice-transcription/index.wxml-->
+<view class="bg-page min-h-screen">
+  <!-- Custom Navigation Bar -->
+  <view class="px-4 py-6 flex items-center justify-between">
+    <view class="flex items-center">
+      <view class="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm mr-2" bindtap="goBack">
+        <image src="../../../assets/icons/arrow-left.svg" class="w-5 h-5" mode="aspectFit"></image>
+      </view>
+      <text class="text-lg font-semibold text-primary">AI语音转文字</text>
+    </view>
+  </view>
+
+  <scroll-view scroll-y="{{true}}" enhanced show-scrollbar="{{false}}" class="pb-20">
+    <view class="px-4">
+      <!-- Recording Section -->
+      <view class="bg-white rounded-2xl shadow-card mb-6 p-4">
+        <!-- Audio Waveform -->
+        <view class="relative w-full h-32 bg-gray-50 rounded-xl overflow-hidden flex items-center justify-center mb-4">
+          <block wx:if="{{!isRecording && !currentAudioUrl}}">
+            <view class="flex flex-col items-center">
+              <image src="../../../assets/icons/mic.svg" class="w-12 h-12 mb-2" mode="aspectFit"></image>
+              <text class="text-secondary">点击开始录音</text>
+            </view>
+          </block>
+          <block wx:elif="{{isRecording}}">
+            <view class="w-full h-full flex items-center justify-center">
+              <view class="animate-pulse text-primary text-2xl font-bold">{{formatTime(recordingTime)}}</view>
+            </view>
+          </block>
+          <block wx:else>
+            <view class="w-full h-full flex items-center justify-center">
+              <view class="text-primary text-2xl font-bold">{{formatTime(recordingDuration)}}</view>
+            </view>
+          </block>
+        </view>
+
+        <!-- Recording Controls -->
+        <view class="flex justify-center items-center space-x-6">
+          <view class="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center"
+                bindtap="stopRecording"
+                wx:if="{{isRecording}}">
+            <image src="../../../assets/icons/stop.svg" class="w-6 h-6" mode="aspectFit"></image>
+          </view>
+          <view class="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center"
+                bindtap="{{isRecording ? 'pauseRecording' : 'startRecording'}}">
+            <image src="{{isRecording ? '../../../assets/icons/pause.svg' : '../../../assets/icons/play.svg'}}"
+                   class="w-6 h-6" mode="aspectFit"></image>
+          </view>
+          <view class="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center"
+                bindtap="resumeRecording"
+                wx:if="{{isPaused}}">
+            <image src="../../../assets/icons/resume.svg" class="w-6 h-6" mode="aspectFit"></image>
+          </view>
+        </view>
+      </view>
+
+      <!-- Transcription Options -->
+      <view class="bg-white rounded-2xl shadow-card mb-6 p-4">
+        <text class="text-primary font-medium mb-4 block">转写选项</text>
+
+        <!-- Mode Selection -->
+        <view class="mb-4">
+          <text class="text-secondary text-sm mb-2 block">转写模式</text>
+          <scroll-view scroll-x="{{true}}" class="whitespace-nowrap -mx-1 px-1" enhanced show-scrollbar="{{false}}">
+            <view wx:for="{{transcriptionModes}}" wx:key="id"
+                  class="inline-block mr-2 p-3 {{selectedMode === item.id ? 'bg-green-500 text-white' : 'bg-gray-50 text-primary'}} rounded-xl w-32"
+                  bindtap="selectMode"
+                  data-id="{{item.id}}">
+              <view class="flex flex-col items-center">
+                <image src="{{item.icon}}" class="w-8 h-8 mb-1" mode="aspectFit"></image>
+                <text class="text-xs {{selectedMode === item.id ? 'text-white' : 'text-primary'}} font-medium">{{item.name}}</text>
+                <text class="text-xxs {{selectedMode === item.id ? 'text-white opacity-80' : 'text-secondary'}} truncate block">{{item.description}}</text>
+              </view>
+            </view>
+          </scroll-view>
+        </view>
+
+        <!-- Language Selection -->
+        <view>
+          <text class="text-secondary text-sm mb-2 block">识别语言</text>
+          <scroll-view scroll-x="{{true}}" class="whitespace-nowrap -mx-1 px-1" enhanced show-scrollbar="{{false}}">
+            <view wx:for="{{languages}}" wx:key="id"
+                  class="inline-block mr-2 px-4 py-2 {{selectedLanguage === item.id ? 'bg-green-500 text-white' : 'bg-gray-50 text-primary'}} rounded-xl"
+                  bindtap="selectLanguage"
+                  data-id="{{item.id}}">
+              <text class="text-sm {{selectedLanguage === item.id ? 'text-white' : 'text-primary'}}">{{item.name}}</text>
+            </view>
+          </scroll-view>
+        </view>
+      </view>
+
+      <!-- Transcribe Button -->
+      <view class="mb-6">
+        <button class="w-full py-3 bg-green-500 text-white rounded-xl flex items-center justify-center"
+                bindtap="transcribeAudio"
+                disabled="{{isTranscribing || !currentAudioUrl}}">
+          <text wx:if="{{!isTranscribing}}">开始转写</text>
+          <view wx:else class="flex items-center">
+            <text class="mr-2">转写中</text>
+            <view class="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></view>
+          </view>
+        </button>
+      </view>
+
+      <!-- Result Section -->
+      <block wx:if="{{transcriptionResult}}">
+        <view class="bg-white rounded-2xl shadow-card mb-6 p-4">
+          <view class="flex justify-between items-center mb-4">
+            <text class="text-primary font-medium">转写结果</text>
+            <view class="flex">
+              <view class="w-8 h-8 bg-green-50 rounded-full flex items-center justify-center mr-2" bindtap="copyText">
+                <image src="../../../assets/icons/copy.svg" class="w-4 h-4" mode="aspectFit"></image>
+              </view>
+              <view class="w-8 h-8 bg-green-50 rounded-full flex items-center justify-center mr-2" bindtap="exportAsFile">
+                <image src="../../../assets/icons/download.svg" class="w-4 h-4" mode="aspectFit"></image>
+              </view>
+              <view class="w-8 h-8 bg-green-50 rounded-full flex items-center justify-center" bindtap="shareText">
+                <image src="../../../assets/icons/share.svg" class="w-4 h-4" mode="aspectFit"></image>
+              </view>
+            </view>
+          </view>
+
+          <view class="bg-gray-50 rounded-xl p-4">
+            <text class="text-sm text-primary whitespace-pre-wrap">{{transcriptionResult}}</text>
+          </view>
+        </view>
+      </block>
+
+      <!-- History Section -->
+      <block wx:if="{{transcriptionHistory.length > 0}}">
+        <view class="mb-6">
+          <text class="text-primary font-medium mb-4 block">历史记录</text>
+          <view class="space-y-3">
+            <view wx:for="{{transcriptionHistory}}" wx:key="id"
+                  class="bg-white p-3 rounded-xl shadow-card {{selectedItem && selectedItem.id === item.id ? 'border-2 border-green-500' : ''}}"
+                  bindtap="viewHistoryItem"
+                  data-id="{{item.id}}">
+              <view class="flex">
+                <view class="flex-1">
+                  <view class="flex items-center">
+                    <text class="text-sm text-primary font-medium">转写记录 #{{index + 1}}</text>
+                    <text class="ml-2 px-1-5 py-0-5 bg-green-50 text-green-500 text-xxs rounded-full">
+                      {{item.language}}
+                    </text>
+                  </view>
+                  <text class="text-xs text-secondary mt-1 line-clamp-2">{{item.text}}</text>
+                  <text class="text-xxs text-secondary mt-1 block">{{formatTimestamp(item.timestamp)}}</text>
+                </view>
+                <view class="ml-3 self-center">
+                  <image src="../../../assets/icons/arrow-right.svg" class="w-4 h-4 opacity-40" mode="aspectFit"></image>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- Bottom Padding -->
+      <view class="h-20"></view>
+    </view>
+  </scroll-view>
+</view>
+
+<!-- WXS Module for date formatting -->
+<wxs module="wxs">
+  function formatDate(timestamp) {
+    var date = getDate(timestamp);
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+    var hour = date.getHours();
+    var minute = date.getMinutes();
+
+    return month + '-' + day + ' ' + hour + ':' + (minute < 10 ? '0' + minute : minute);
+  }
+
+  module.exports = {
+    formatDate: formatDate
+  };
+</wxs>

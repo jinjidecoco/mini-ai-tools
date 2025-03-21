@@ -1,0 +1,128 @@
+<!--language-translator/index.wxml-->
+<wxs module="dateFormat">
+  function formatTime(timestamp) {
+    if (!timestamp) return '';
+    var date = getDate(timestamp);
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+    var hour = date.getHours();
+    var minute = date.getMinutes();
+
+    month = month < 10 ? '0' + month : month;
+    day = day < 10 ? '0' + day : day;
+    hour = hour < 10 ? '0' + hour : hour;
+    minute = minute < 10 ? '0' + minute : minute;
+
+    return year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
+  }
+
+  module.exports = {
+    formatTime: formatTime
+  };
+</wxs>
+
+<view class="translator-container">
+  <!-- Custom Navigation Bar -->
+  <view class="nav-bar">
+    <view class="back-btn" bindtap="goBack">
+      <image src="../../../assets/icons/back.svg" mode="aspectFit"></image>
+    </view>
+    <view class="nav-title">AI语言翻译</view>
+  </view>
+
+  <!-- Language Selection -->
+  <view class="language-selection">
+    <view class="language-item">
+      <text class="language-label">从</text>
+      <picker class="language-picker" bindchange="selectSourceLanguage" value="{{sourceLanguageIndex}}" range="{{languages}}" range-key="name">
+        <view class="language-value">{{languages[sourceLanguageIndex].name}}</view>
+      </picker>
+    </view>
+
+    <view class="switch-btn" bindtap="switchLanguages">
+      <image src="../../../assets/icons/switch.svg" mode="aspectFit"></image>
+    </view>
+
+    <view class="language-item">
+      <text class="language-label">到</text>
+      <picker class="language-picker" bindchange="selectTargetLanguage" value="{{targetLanguageIndex}}" range="{{languages}}" range-key="name">
+        <view class="language-value">{{languages[targetLanguageIndex].name}}</view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- Translator Form -->
+  <view class="translator-form">
+    <view class="input-area">
+      <view class="textarea-wrapper">
+        <textarea class="input-textarea" value="{{sourceText}}" bindinput="onSourceTextInput" maxlength="500" placeholder="请输入要翻译的文本" placeholder-class="placeholder-text" auto-height></textarea>
+      </view>
+
+      <view class="input-tools">
+        <view class="char-count">{{sourceText.length}}/500</view>
+        <view class="clear-btn" wx:if="{{sourceText.length > 0}}" bindtap="clearSourceText">
+          <image src="../../../assets/icons/clear.svg" mode="aspectFit"></image>
+        </view>
+      </view>
+    </view>
+
+    <!-- Common Phrases -->
+    <view class="common-phrases" wx:if="{{sourceLanguageIndex === 0}}">
+      <view class="phrase-title">常用短语</view>
+      <view class="phrase-list">
+        <view class="phrase-item" wx:for="{{commonPhrases}}" wx:key="index" bindtap="useCommonPhrase" data-phrase="{{item}}">
+          {{item}}
+        </view>
+      </view>
+    </view>
+
+    <!-- Translate Button -->
+    <button class="translate-btn {{isTranslating ? 'loading' : ''}}" bindtap="translateText" disabled="{{isTranslating}}">
+      <image wx:if="{{isTranslating}}" class="loading-icon" src="../../../assets/icons/loading.svg" mode="aspectFit"></image>
+      <text>{{isTranslating ? '翻译中...' : '立即翻译'}}</text>
+    </button>
+
+    <!-- Translation Result -->
+    <view class="result-area" wx:if="{{translatedText}}">
+      <view class="result-content">{{translatedText}}</view>
+
+      <view class="result-tools">
+        <view class="tool-btn" bindtap="copyTranslation">
+          <image src="../../../assets/icons/copy.svg" mode="aspectFit"></image>
+          <text class="tool-text">复制</text>
+        </view>
+        <view class="tool-btn" bindtap="shareTranslation">
+          <image src="../../../assets/icons/share.svg" mode="aspectFit"></image>
+          <text class="tool-text">分享</text>
+        </view>
+      </view>
+
+      <view class="translation-time" wx:if="{{translationTime}}">
+        翻译时间: {{dateFormat.formatTime(translationTime)}}
+      </view>
+    </view>
+  </view>
+
+  <!-- Translation History -->
+  <view class="history-section" wx:if="{{translationHistory.length > 0}}">
+    <view class="history-header">
+      <view class="history-title">翻译历史</view>
+      <view class="clear-history" bindtap="clearHistory">清除历史</view>
+    </view>
+
+    <view class="history-list">
+      <view class="history-item" wx:for="{{translationHistory}}" wx:key="id" bindtap="useHistoryItem" data-id="{{item.id}}">
+        <view class="history-languages">
+          <text class="history-language">{{item.sourceLanguage}}</text>
+          <text class="history-arrow">→</text>
+          <text class="history-language">{{item.targetLanguage}}</text>
+        </view>
+
+        <view class="history-text">{{item.sourceText}}</view>
+        <view class="history-translated">{{item.translatedText}}</view>
+        <view class="history-time">{{dateFormat.formatTime(item.timestamp)}}</view>
+      </view>
+    </view>
+  </view>
+</view>

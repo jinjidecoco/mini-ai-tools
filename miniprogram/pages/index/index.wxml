@@ -1,0 +1,110 @@
+<!-- index.wxml -->
+<view class="page-container">
+  <!-- 顶部导航栏 -->
+  <view class="nav-bar">
+    <view class="nav-left">
+      <image class="logo-icon" src="../../assets/icons/logo.svg" mode="aspectFill"></image>
+      <text class="logo-text">Mini工具</text>
+    </view>
+    <view class="nav-right">
+      <view class="nav-icon-wrapper" bindtap="handleSearch" hover-class="icon-active">
+        <image class="nav-icon" src="../../assets/icons/search.svg" mode="aspectFit"></image>
+      </view>
+      <view class="nav-icon-wrapper" bindtap="handleNotification" hover-class="icon-active">
+        <image class="nav-icon" src="../../assets/icons/notification.svg" mode="aspectFit"></image>
+      </view>
+    </view>
+  </view>
+  <!-- 内容滚动区域 -->
+  <scroll-view class="content-scroll" scroll-y enhanced show-scrollbar="{{false}}" bounces="{{true}}" fast-deceleration="{{true}}">
+    <!-- 顶部横幅 -->
+    <view class="hero-section">
+      <view class="hero-banner">
+        <text class="hero-title">探索更多智能工具</text>
+        <text class="hero-subtitle">超过50种AI驱动工具，助您提高工作效率</text>
+        <view class="hero-button" hover-class="button-hover" bindtap="navigateToCategory">
+          立即探索
+        </view>
+      </view>
+    </view>
+
+    <!-- 快速工具 -->
+    <view class="tools-section">
+      <view class="section-title-row">
+        <text class="section-title">快速工具</text>
+        <view class="view-all" hover-class="view-all-hover" bindtap="navigateToToolsList">
+          <text>查看全部</text>
+          <image class="arrow-icon" src="../../assets/icons/arrow-right.svg"></image>
+        </view>
+      </view>
+
+      <view class="quick-tools">
+        <view wx:for="{{quickTools}}" wx:key="id" class="tool-grid-item" hover-class="item-hover" bindtap="handleToolClick" data-url="{{item.url}}">
+          <view class="tool-grid-icon" style="background-color: {{item.color}}">
+            <image src="{{item.icon}}" mode="aspectFit"></image>
+          </view>
+          <text class="tool-grid-name">{{item.name}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 热门工具 -->
+    <view class="tools-section">
+      <view class="section-title-row">
+        <text class="section-title">热门工具</text>
+        <view class="view-all" hover-class="view-all-hover" bindtap="navigateToToolsList">
+          <text>查看全部</text>
+          <image class="arrow-icon" src="../../assets/icons/arrow-right.svg"></image>
+        </view>
+      </view>
+
+      <view class="popular-tools">
+        <view wx:for="{{popularTools}}" wx:key="id" class="tool-card" hover-class="card-hover" bindtap="handleToolClick" data-url="{{item.url}}">
+          <view class="tool-card-icon" style="background-color: {{item.color}}">
+            <image src="{{item.icon}}" mode="aspectFit"></image>
+          </view>
+          <view class="tool-card-content">
+            <text class="tool-card-title">{{item.name}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 最近使用 -->
+    <view class="tools-section" wx:if="{{recentTools.length > 0}}">
+      <view class="section-title-row">
+        <text class="section-title">最近使用</text>
+        <view class="view-all" hover-class="view-all-hover" bindtap="viewHistory">
+          <text>查看全部</text>
+          <image class="arrow-icon" src="../../assets/icons/arrow-right.svg"></image>
+        </view>
+      </view>
+
+      <scroll-view class="recent-scroll" scroll-x enhanced show-scrollbar="{{false}}" fast-deceleration="{{true}}">
+        <view wx:for="{{recentTools}}" wx:key="id" class="recent-tool" hover-class="card-hover" bindtap="handleToolClick" data-url="{{item.url}}">
+          <view class="recent-tool-header">
+            <view class="recent-tool-icon" style="background-color: {{item.color}}">
+              <image src="{{item.icon}}" mode="aspectFit"></image>
+            </view>
+            <text class="recent-tool-name">{{item.name}}</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 升级横幅 -->
+    <view class="upgrade-banner">
+      <view class="upgrade-content">
+        <text class="upgrade-title">升级到专业版</text>
+        <text class="upgrade-subtitle">解锁全部高级AI功能，全方位提升效率</text>
+        <view class="upgrade-button" hover-class="button-hover" bindtap="upgradeToPro">
+          立即升级
+        </view>
+      </view>
+      <view class="upgrade-decoration"></view>
+    </view>
+
+    <!-- 底部间距 -->
+    <view class="bottom-space"></view>
+  </scroll-view>
+</view>

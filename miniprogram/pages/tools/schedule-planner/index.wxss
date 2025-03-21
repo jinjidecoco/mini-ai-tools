@@ -1,0 +1,307 @@
+/**index.wxss**/
+page {
+  background-color: #F9FAFB;
+  height: 100%;
+  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  line-height: 1.6;
+  --primary-color: #3B82F6;
+  --secondary-color: #10B981;
+  --accent-color: #8B5CF6;
+  --text-primary: #111827;
+  --text-secondary: #6B7280;
+  --bg-page: #F9FAFB;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.container {
+  padding: 20rpx;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: 20rpx 0;
+  margin-bottom: 30rpx;
+}
+
+.title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  margin-top: 10rpx;
+}
+
+.calendar-section {
+  background-color: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 30rpx;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.month-navigation {
+  display: flex;
+  align-items: center;
+}
+
+.month-navigation-button {
+  padding: 10rpx;
+  font-size: 24rpx;
+}
+
+.current-month {
+  font-weight: 600;
+  margin: 0 20rpx;
+}
+
+.weekdays {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10rpx;
+}
+
+.weekday {
+  flex: 1;
+  text-align: center;
+  font-weight: 500;
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10rpx;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  position: relative;
+}
+
+.calendar-day.current-month {
+  background-color: #F3F4F6;
+}
+
+.calendar-day.other-month {
+  color: #D1D5DB;
+  background-color: #F9FAFB;
+}
+
+.calendar-day.today {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.calendar-day.has-events::after {
+  content: '';
+  position: absolute;
+  bottom: 8rpx;
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background-color: var(--accent-color);
+}
+
+.events-section {
+  background-color: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: var(--card-shadow);
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.events-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.events-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.add-event-button {
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 8rpx;
+  padding: 12rpx 24rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.events-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.event-item {
+  padding: 20rpx;
+  border-left: 4rpx solid var(--primary-color);
+  background-color: #EFF6FF;
+  border-radius: 8rpx;
+  margin-bottom: 16rpx;
+}
+
+.event-time {
+  font-size: 24rpx;
+  color: var(--primary-color);
+  font-weight: 500;
+  margin-bottom: 8rpx;
+}
+
+.event-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8rpx;
+}
+
+.event-description {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+}
+
+.event-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}
+
+.event-action {
+  font-size: 24rpx;
+  color: var(--primary-color);
+}
+
+.no-events {
+  text-align: center;
+  padding: 40rpx 0;
+  color: var(--text-secondary);
+}
+
+/* Event form section */
+.event-form {
+  background-color: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: var(--card-shadow);
+}
+
+.form-group {
+  margin-bottom: 20rpx;
+}
+
+.form-label {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 10rpx;
+}
+
+.form-input {
+  width: 100%;
+  padding: 20rpx;
+  box-sizing: border-box;
+  border: 1px solid #E5E7EB;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+}
+
+.form-textarea {
+  width: 100%;
+  height: 160rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+  border: 1px solid #E5E7EB;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20rpx;
+  margin-top: 30rpx;
+}
+
+.form-button {
+  padding: 20rpx 40rpx;
+  border-radius: 8rpx;
+  font-weight: 500;
+  text-align: center;
+}
+
+.cancel-button {
+  color: var(--text-secondary);
+  background-color: #F3F4F6;
+}
+
+.save-button {
+  color: white;
+  background-color: var(--primary-color);
+}
+
+/* Utility classes */
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.bg-primary {
+  background-color: var(--primary-color);
+}
+
+.bg-secondary {
+  background-color: var(--secondary-color);
+}
+
+.bg-accent {
+  background-color: var(--accent-color);
+}
+
+.bg-page {
+  background-color: var(--bg-page);
+}
+
+.shadow-card {
+  box-shadow: var(--card-shadow);
+}
+
+/* Fix for scrollbar */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Animation for active state */
+.scale-on-active:active {
+  transform: scale(0.98);
+}
