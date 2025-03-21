@@ -571,28 +571,48 @@ button[disabled] {
       .setting-options {
         display: flex;
         flex-wrap: wrap;
-        gap: @spacing-md;
+        gap: 12rpx;
+        margin-top: 10rpx;
 
         .option-button {
-          padding: @spacing-sm @spacing-md;
-          background-color: @bg-secondary;
-          border: 2rpx solid @border-color;
-          border-radius: @radius-sm;
-          font-size: 26rpx;
-          color: @text-color;
+          padding: 12rpx 24rpx;
+          background-color: #F3F4F6;
+          border-radius: 8rpx;
+          font-size: 28rpx;
+          color: #4B5563;
+          flex: 1;
+          min-width: 120rpx;
+          text-align: center;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: @transition-fast;
+          gap: 8rpx;
 
-          &:active {
-            transform: scale(0.97);
+          image {
+            width: 36rpx;
+            height: 36rpx;
           }
 
           &.active {
-            background-color: @primary-color;
-            color: @text-inverse;
-            border-color: @primary-color;
+            background-color: rgba(59, 130, 246, 0.1);
+            color: #3B82F6;
+            font-weight: 500;
+          }
+
+          // Different active colors for different options
+          &[data-type="article"].active {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: #3B82F6;
+          }
+
+          &[data-type="summary"].active {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #10B981;
+          }
+
+          &[data-type="continue"].active {
+            background-color: rgba(139, 92, 246, 0.1);
+            color: #8B5CF6;
           }
         }
       }

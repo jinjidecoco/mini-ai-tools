@@ -14,10 +14,9 @@
     "pages/settings/settings",
     "pages/logs/logs",
     "pages/tools/watermark-remover/index",
-    "pages/tools/voice-to-text/index",
     "pages/tools/homework-checker/index",
     "pages/tools/qrcode-generator/index",
-    "/pages/tools/background-remover/index"
+    "pages/tools/background-remover/index"
 
 
   ],

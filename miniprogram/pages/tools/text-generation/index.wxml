@@ -3,11 +3,11 @@
   <!-- 顶部导航栏 -->
   <view class="tool-navbar">
     <view class="nav-back" bindtap="navigateBack">
-      <image src="../../../../assets/icons/arrow-left.svg" mode="aspectFit"></image>
+      <image src="../../../assets/icons/arrow-left.svg" mode="aspectFit"></image>
     </view>
     <text class="nav-title">文本生成</text>
     <view class="nav-action" bindtap="showSettings" wx:if="{{!showSettings}}">
-      <image src="../../../../assets/icons/settings.svg" mode="aspectFit"></image>
+      <image src="../../../assets/icons/settings.svg" mode="aspectFit"></image>
     </view>
     <view class="nav-action" wx:else></view>
   </view>
@@ -29,7 +29,7 @@
             {{promptText.length}}/500
           </view>
           <view class="clear-btn" bindtap="clearPrompt" wx:if="{{promptText.length > 0}}">
-            <image src="../../../../assets/icons/close-circle.svg" mode="aspectFit"></image>
+            <image src="../../../assets/icons/close-circle.svg" mode="aspectFit"></image>
           </view>
         </view>
       </view>
@@ -39,7 +39,7 @@
         <view class="panel-header">
           <text class="panel-title">生成设置</text>
           <view class="panel-close" bindtap="hideSettings">
-            <image src="../../../../assets/icons/close.svg" mode="aspectFit"></image>
+            <image src="../../../assets/icons/close.svg" mode="aspectFit"></image>
           </view>
         </view>
 
@@ -48,15 +48,18 @@
           <view class="setting-options">
             <view class="option-button {{textType === 'article' ? 'active' : ''}}"
                   bindtap="setTextType" data-type="article">
+              <image src="../../../assets/icons/article.svg" mode="aspectFit"></image>
               <text>文章</text>
             </view>
             <view class="option-button {{textType === 'summary' ? 'active' : ''}}"
                   bindtap="setTextType" data-type="summary">
+              <image src="../../../assets/icons/summary.svg" mode="aspectFit"></image>
               <text>摘要</text>
             </view>
-            <view class="option-button {{textType === 'creative' ? 'active' : ''}}"
-                  bindtap="setTextType" data-type="creative">
-              <text>创意文本</text>
+            <view class="option-button {{textType === 'continue' ? 'active' : ''}}"
+                  bindtap="setTextType" data-type="continue">
+              <image src="../../../assets/icons/continue.svg" mode="aspectFit"></image>
+              <text>续写</text>
             </view>
           </view>
         </view>
@@ -127,10 +130,10 @@
         <text class="result-title">生成结果</text>
         <view class="result-actions">
           <view class="result-action" bindtap="copyResult" wx:if="{{resultText}}">
-            <image src="../../../../assets/icons/copy.svg" mode="aspectFit"></image>
+            <image src="../../../assets/icons/copy.svg" mode="aspectFit"></image>
           </view>
           <view class="result-action" bindtap="clearResult" wx:if="{{resultText}}">
-            <image src="../../../../assets/icons/refresh.svg" mode="aspectFit"></image>
+            <image src="../../../assets/icons/refresh.svg" mode="aspectFit"></image>
           </view>
         </view>
       </view>
@@ -142,11 +145,11 @@
 
       <view class="action-buttons" wx:if="{{resultText}}">
         <view class="action-button secondary" bindtap="regenerateText">
-          <image src="../../../../assets/icons/refresh.svg" mode="aspectFit"></image>
+          <image src="../../../assets/icons/refresh.svg" mode="aspectFit"></image>
           <text>重新生成</text>
         </view>
         <view class="action-button primary" bindtap="saveToHistory">
-          <image src="../../../../assets/icons/save.svg" mode="aspectFit"></image>
+          <image src="../../../assets/icons/save.svg" mode="aspectFit"></image>
           <text>保存结果</text>
         </view>
       </view>
@@ -162,14 +165,14 @@
       <view class="vertical-history-list">
         <view class="history-item" wx:for="{{history}}" wx:key="id" bindtap="viewHistoryItem" data-id="{{item.id}}">
           <view class="history-icon">
-            <image src="../../../../assets/icons/text-tool.svg" mode="aspectFit"></image>
+            <image src="../../../assets/icons/text-tool.svg" mode="aspectFit"></image>
           </view>
           <view class="history-content">
             <text class="history-title">{{item.prompt}}</text>
-            <text class="history-date">{{item.date}}</text>
+            <text class="history-date">{{wxs.formatDate(item.date)}}</text>
           </view>
           <view class="history-action" catchtap="deleteHistoryItem" data-id="{{item.id}}">
-            <image src="../../../../assets/icons/delete.svg" mode="aspectFit"></image>
+            <image src="../../../assets/icons/delete.svg" mode="aspectFit"></image>
           </view>
         </view>
       </view>

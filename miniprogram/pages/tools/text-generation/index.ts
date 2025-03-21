@@ -9,7 +9,7 @@ interface HistoryItem {
   type: string;
 }
 
-type TextType = 'article' | 'summary' | 'creative';
+type TextType = 'article' | 'summary' | 'continue';
 type TextLength = 'short' | 'medium' | 'long';
 type TextStyle = 'formal' | 'casual' | 'professional';
 
@@ -180,8 +180,8 @@ Page({
       result = this.generateArticle(promptText, textLength, textStyle);
     } else if (textType === 'summary') {
       result = this.generateSummary(promptText, textLength, textStyle);
-    } else if (textType === 'creative') {
-      result = this.generateCreative(promptText, textLength, textStyle);
+    } else if (textType === 'continue') {
+      result = this.generateContinue(promptText, textLength, textStyle);
     }
 
     // 更新状态
@@ -231,24 +231,21 @@ Page({
     return summary.trim();
   },
 
-  // 生成创意文本（模拟）
-  generateCreative(prompt: string, length: TextLength, style: TextStyle): string {
-    // 模拟生成创意文本
+  // 生成续写内容（模拟）
+  generateContinue(prompt: string, length: TextLength, style: TextStyle): string {
+    // 模拟生成续写内容
     const lengthFactor = length === 'short' ? 1 : length === 'medium' ? 2 : 3;
-    const sections = 2 * lengthFactor;
+    const paragraphs = 2 * lengthFactor;
 
-    let creative = '';
+    let continuedText = prompt + '\n\n';
 
-    // 添加标题
-    creative += prompt + '\n\n';
-
-    // 添加创意内容
-    for (let i = 0; i < sections; i++) {
-      let sectionLength = 100 + Math.random() * 80;
-      creative += this.generateParagraph(sectionLength, style) + '\n\n';
+    // 生成续写段落
+    for (let i = 0; i < paragraphs; i++) {
+      let paragraphLength = 180 + Math.random() * 90;
+      continuedText += this.generateParagraph(paragraphLength, style) + '\n\n';
     }
 
-    return creative.trim();
+    return continuedText.trim();
   },
 
   // 生成段落（模拟）
@@ -323,6 +320,18 @@ Page({
 
     // 保存到本地存储
     wx.setStorageSync('textGenerationHistory', history);
+  },
+
+  // 保存结果 - 添加的方法，在WXML中被引用
+  saveToHistory() {
+    if (!this.data.resultText) {
+      return;
+    }
+
+    wx.showToast({
+      title: '已保存',
+      icon: 'success'
+    });
   },
 
   // 复制结果

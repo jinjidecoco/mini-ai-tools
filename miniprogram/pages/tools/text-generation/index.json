@@ -1,6 +1,6 @@
 {
   "usingComponents": {},
-  "navigationBarTitleText": "AI文本生成",
+  "navigationBarTitleText": "文本生成",
   "navigationStyle": "custom",
-  "backgroundColor": "#F9FAFB"
+  "backgroundColor": "#f9fafb"
 }
