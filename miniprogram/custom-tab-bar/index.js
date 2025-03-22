@@ -1,3 +1,11 @@
+/*
+ * @Author: jinjidecoco 18895627215@163.com
+ * @Date: 2025-03-20 13:51:38
+ * @LastEditors: jinjidecoco 18895627215@163.com
+ * @LastEditTime: 2025-03-22 23:11:53
+ * @FilePath: /mini-tools/miniprogram/custom-tab-bar/index.js
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 Component({
   data: {
     selected: 0,
