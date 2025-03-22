@@ -4,7 +4,7 @@
   <view class="nav-bar">
     <view class="nav-left">
       <image class="logo-icon" src="../../assets/icons/logo.svg" mode="aspectFill"></image>
-      <text class="logo-text">Mini工具</text>
+      <text class="logo-text">AI工具助手</text>
     </view>
     <view class="nav-right">
       <view class="nav-icon-wrapper" bindtap="handleSearch" hover-class="icon-active">
@@ -107,8 +107,8 @@
     <!-- 升级横幅 -->
     <view class="upgrade-banner">
       <view class="upgrade-content">
-        <text class="upgrade-title">升级到专业版</text>
-        <text class="upgrade-subtitle">解锁全部高级AI功能，全方位提升效率</text>
+        <view class="upgrade-title">升级到专业版</view>
+        <view class="upgrade-subtitle">解锁全部高级AI功能，全方位提升效率</view>
         <view class="upgrade-button" hover-class="button-hover" bindtap="upgradeToPro">
           立即升级
         </view>

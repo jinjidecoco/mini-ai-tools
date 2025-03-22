@@ -14,7 +14,7 @@
     <!-- 图片选择区域 -->
     <view class="upload-section" wx:if="{{!originalImage}}">
       <view class="upload-card" bindtap="chooseImage">
-        <image class="upload-icon" src="../../../assets/icons/image-upload.svg" mode="aspectFit"></image>
+        <image class="upload-icon" src="../../../assets/icons/upload-image.svg" mode="aspectFit"></image>
         <text class="upload-text">点击上传图片</text>
         <text class="upload-hint">支持PNG、JPG、JPEG格式图片</text>
       </view>

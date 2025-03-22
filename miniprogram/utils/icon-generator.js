@@ -3,12 +3,82 @@
 
 const fs = require('fs');
 const path = require('path');
+const { createCanvas } = require('canvas');
+const { JSDOM } = require('jsdom');
+const { SVGPathData } = require('svg-pathdata');
 
 const ICONS_DIR = path.join(__dirname, '../assets/icons');
 
 // Ensure the icons directory exists
 if (!fs.existsSync(ICONS_DIR)) {
   fs.mkdirSync(ICONS_DIR, { recursive: true });
+}
+
+// Function to convert SVG string to PNG buffer
+function svgToPng(svgString, size = 32) {
+  // For simplicity, we're creating a basic PNG
+  // In a real implementation, you would use proper SVG to PNG conversion
+  const canvas = createCanvas(size, size);
+  const ctx = canvas.getContext('2d');
+
+  // Fill with transparent background
+  ctx.clearRect(0, 0, size, size);
+
+  // Draw a simple representation based on the SVG type
+  if (svgString.includes('home')) {
+    // Home icon
+    ctx.fillStyle = svgString.includes('active') ? '#3B82F6' : '#6B7280';
+    ctx.beginPath();
+    ctx.moveTo(16, 4);
+    ctx.lineTo(28, 14);
+    ctx.lineTo(28, 28);
+    ctx.lineTo(4, 28);
+    ctx.lineTo(4, 14);
+    ctx.lineTo(16, 4);
+    ctx.closePath();
+    ctx.fill();
+
+    // Door
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(12, 18, 8, 10);
+  } else if (svgString.includes('category')) {
+    // Category icon
+    ctx.fillStyle = svgString.includes('active') ? '#3B82F6' : '#6B7280';
+    ctx.fillRect(4, 4, 10, 10);
+    ctx.fillRect(18, 4, 10, 10);
+    ctx.fillRect(4, 18, 10, 10);
+    ctx.fillRect(18, 18, 10, 10);
+  } else if (svgString.includes('profile')) {
+    // Profile icon
+    ctx.fillStyle = svgString.includes('active') ? '#3B82F6' : '#6B7280';
+    // Head
+    ctx.beginPath();
+    ctx.arc(16, 10, 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Body
+    ctx.beginPath();
+    ctx.moveTo(6, 28);
+    ctx.lineTo(26, 28);
+    ctx.lineTo(26, 24);
+    ctx.quadraticCurveTo(16, 18, 6, 24);
+    ctx.closePath();
+    ctx.fill();
+  } else {
+    // Generic icon for others
+    ctx.fillStyle = '#6B7280';
+    ctx.beginPath();
+    ctx.arc(16, 16, 12, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  return canvas.toBuffer('image/png');
+}
+
+// Function to save SVG string as PNG file
+function saveSvgAsPng(svgString, filePath) {
+  const pngBuffer = svgToPng(svgString);
+  fs.writeFileSync(filePath, pngBuffer);
 }
 
 // Generate tool icons
@@ -23,6 +93,7 @@ for (let i = 1; i <= 4; i++) {
 </svg>
   `;
   fs.writeFileSync(path.join(ICONS_DIR, `tool-${i}.svg`), toolIcon.trim());
+  saveSvgAsPng(toolIcon, path.join(ICONS_DIR, `tool-${i}.png`));
 }
 
 // Generate recent icons
@@ -37,6 +108,7 @@ for (let i = 1; i <= 4; i++) {
 </svg>
   `;
   fs.writeFileSync(path.join(ICONS_DIR, `recent-${i}.svg`), recentIcon.trim());
+  saveSvgAsPng(recentIcon, path.join(ICONS_DIR, `recent-${i}.png`));
 }
 
 // Generate navigation icons
@@ -54,6 +126,11 @@ const navigationIcons = {
 
 for (const [filename, content] of Object.entries(navigationIcons)) {
   fs.writeFileSync(path.join(ICONS_DIR, filename), content.trim());
+
+  // Also save as PNG if it's a PNG file
+  if (filename.endsWith('.png')) {
+    saveSvgAsPng(content, path.join(ICONS_DIR, filename));
+  }
 }
 
 console.log('Icon files generated successfully!');

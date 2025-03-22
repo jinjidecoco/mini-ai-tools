@@ -18,7 +18,8 @@
             "ignore": [],
             "disablePlugins": [],
             "outputPath": ""
-        }
+        },
+        "useCompilerPlugins": ["typescript"]
     },
     "condition": {},
     "editorSetting": {

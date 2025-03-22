@@ -6,19 +6,19 @@ Component({
     backgroundColor: "#FFFFFF",
     list: [
       {
-        pagePath: "pages/index/index",
+        pagePath: "/pages/index/index",
         text: "首页",
         iconPath: "../assets/icons/home.png",
         selectedIconPath: "../assets/icons/home-active.png"
       },
       {
-        pagePath: "pages/categories/index",
+        pagePath: "/pages/categories/index",
         text: "分类",
         iconPath: "../assets/icons/category.png",
         selectedIconPath: "../assets/icons/category-active.png"
       },
       {
-        pagePath: "pages/profile/index",
+        pagePath: "/pages/profile/index",
         text: "我的",
         iconPath: "../assets/icons/profile.png",
         selectedIconPath: "../assets/icons/profile-active.png"
@@ -50,7 +50,7 @@ Component({
       const url = data.path;
 
       wx.switchTab({
-        url: '/' + url
+        url: url
       });
 
       this.setData({

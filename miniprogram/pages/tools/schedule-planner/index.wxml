@@ -2,17 +2,19 @@
 <view class="container">
   <!-- Header Section -->
   <view class="header">
-    <view class="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm mr-2" bindtap="goBack">
-      <image src="../../../assets/icons/arrow-left.svg" class="w-5 h-5" mode="aspectFit"></image>
+    <view class="back-button" bindtap="goBack">
+      <image src="../../../assets/icons/arrow-left.svg" mode="aspectFit"></image>
     </view>
-    <text class="title">AI日程规划</text>
-    <text class="subtitle">智能规划您的日程安排</text>
+    <view class="header-content">
+      <text class="title">AI日程规划</text>
+      <text class="subtitle">智能规划您的日程安排</text>
+    </view>
   </view>
 
   <!-- Calendar Section -->
   <view class="calendar-section">
     <view class="calendar-header">
-      <text class="current-month">2023年3月</text>
+      <text class="current-month">{{displayMonth}}</text>
       <view class="month-navigation">
         <view class="month-navigation-button" bindtap="previousMonth">
           <text>◀</text>
@@ -34,42 +36,56 @@
     </view>
 
     <view class="calendar-grid">
-      <!-- Calendar Days -->
-      <view class="calendar-day current-month today has-events" bindtap="selectDate" data-date="2023-03-15">
-        <text>15</text>
+      <view
+        wx:for="{{calendarDays}}"
+        wx:key="date"
+        class="calendar-day {{item.isCurrentMonth ? 'current-month' : 'other-month'}} {{item.isToday ? 'today' : ''}} {{item.hasEvents ? 'has-events' : ''}} {{selectedDate === item.date ? 'selected' : ''}}"
+        bindtap="selectDate"
+        data-date="{{item.date}}"
+      >
+        <text>{{item.day}}</text>
       </view>
-      <!-- More calendar days would be rendered here -->
     </view>
   </view>
 
   <!-- Events Section -->
   <view class="events-section">
     <view class="events-header">
-      <text class="events-title">3月15日 星期三</text>
+      <text class="events-title">{{selectedDateDisplay}}</text>
       <view class="add-event-button" bindtap="showAddEventForm">
         <text>添加事件</text>
       </view>
     </view>
 
     <view class="events-list">
-      <view class="event-item" wx:if="{{events && events.length}}">
-        <text class="event-time">09:00 - 10:30</text>
-        <text class="event-title">项目会议</text>
-        <text class="event-description">讨论新功能开发计划</text>
-        <view class="event-actions">
-          <text class="event-action" bindtap="editEvent" data-id="1">编辑</text>
-          <text class="event-action" bindtap="deleteEvent" data-id="1">删除</text>
+      <block wx:if="{{events && events.length}}">
+        <view class="event-item" wx:for="{{events}}" wx:key="id">
+          <text class="event-time">{{item.startTime}} - {{item.endTime}}</text>
+          <text class="event-title">{{item.title}}</text>
+          <text class="event-description" wx:if="{{item.description}}">{{item.description}}</text>
+          <view class="event-actions">
+            <text class="event-action" bindtap="editEvent" data-id="{{item.id}}">编辑</text>
+            <text class="event-action" bindtap="deleteEvent" data-id="{{item.id}}">删除</text>
+          </view>
         </view>
-      </view>
+      </block>
 
       <view class="no-events" wx:else>
-        <text>今天没有安排事件</text>
+        <text>当天没有安排事件</text>
       </view>
     </view>
   </view>
 
-  <!-- Event Form (hidden by default) -->
-  <view class="event-form" wx:if="{{showEventForm}}">
+  <!-- Event Form (Modal Overlay) -->
+  <view class="modal-overlay" wx:if="{{showEventForm}}" bindtap="cancelEventForm"></view>
+  <view class="event-form" wx:if="{{showEventForm}}" catchtap>
+    <view class="form-header">
+      <text class="form-title">{{isEditing ? '编辑事件' : '添加事件'}}</text>
+      <view class="close-button" bindtap="cancelEventForm">
+        <text>×</text>
+      </view>
+    </view>
+
     <view class="form-group">
       <text class="form-label">事件标题</text>
       <input class="form-input" placeholder="输入事件标题" value="{{eventForm.title}}" bindinput="onEventTitleInput" />

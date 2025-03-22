@@ -19,11 +19,13 @@
     "lib": ["ES2020"],
     "typeRoots": [
       "./typings"
-    ]
+    ],
+    "baseUrl": ".",
+    "types": ["miniprogram-api-typings"]
   },
   "include": [
     "./**/*.ts"
-, "miniprogram/pages/tools/translator/index.js", "miniprogram/pages/categories/index.ts"  ],
+  ],
   "exclude": [
     "node_modules"
   ]

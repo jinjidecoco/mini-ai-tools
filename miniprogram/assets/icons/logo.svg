@@ -1,5 +1,24 @@
-<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="40" height="40" rx="10" fill="#2563EB"/>
-  <path d="M13 13V27H27V13H13Z" fill="#FFFFFF" fill-opacity="0.2"/>
-  <path d="M20 10L10 20H15V30H25V20H30L20 10Z" fill="white"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" fill="none">
+  <!-- 背景圆形 -->
+  <circle cx="100" cy="100" r="90" fill="url(#gradient)" />
+
+  <!-- AI符号 -->
+  <path d="M60 70V130M60 70H90M60 130H90M90 70V130M110 70L130 130M150 70L130 130" stroke="white" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- 工具符号 -->
+  <path d="M135 95C138.866 95 142 91.866 142 88C142 84.134 138.866 81 135 81C131.134 81 128 84.134 128 88C128 91.866 131.134 95 135 95Z" fill="white"/>
+  <path d="M65 85L75 75M75 75L85 85M75 75V105" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- 发光效果 -->
+  <circle cx="100" cy="100" r="95" stroke="rgba(255,255,255,0.3)" stroke-width="2" />
+  <circle cx="100" cy="100" r="85" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
+
+  <!-- 渐变定义 -->
+  <defs>
+    <linearGradient id="gradient" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3B82F6"/>
+      <stop offset="0.5" stop-color="#6366F1"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+  </defs>
 </svg>

@@ -27,24 +27,17 @@ Page({
             id: 102,
             name: '文章润色',
             description: '优化文章结构与表达',
-            icon: 'text-polish',
+            icon: 'text-tool',
             url: '/pages/tools/text-generation/index',
             isNew: true
           },
-          {
-            id: 103,
-            name: '营销文案',
-            description: '生成吸引人的广告文案',
-            icon: 'ai-write',
-            url: '/pages/tools/text-generation/index'
-          },
-          {
-            id: 104,
-            name: '社交媒体',
-            description: '创作社交平台内容',
-            icon: 'text-tool',
-            url: '/pages/tools/text-generation/index'
-          }
+        //   {
+        //     id: 104,
+        //     name: '社交媒体',
+        //     description: '创作社交平台内容',
+        //     icon: 'text-tool',
+        //     url: '/pages/tools/text-generation/index'
+        //   }
         ]
       },
       {
@@ -63,10 +56,18 @@ Page({
           },
           {
             id: 202,
-            name: '文本生成图像',
-            description: '将文字创意变为图像',
-            icon: 'ai-image',
-            url: '/pages/tools/text-to-image/index',
+            name: '去除背景',
+            description: '去除图片背景，轻松抠图',
+            icon: 'bg-remover',
+            url: '/pages/tools/background-remover/index',
+            isNew: true
+          },
+          {
+            id: 203,
+            name: 'AI去水印',
+            description: '去除水印，轻松实现',
+            icon: 'watermark-remover',
+            url: '/pages/tools/background-remover/index',
             isNew: true
           }
         ]
@@ -121,21 +122,21 @@ Page({
             description: '智能规划每日日程',
             icon: 'calculator-tool',
             url: '/pages/tools/schedule-planner/index'
-          }
+          },
         ]
       },
       {
         id: 6,
-        name: '开发工具',
+        name: '学习工具',
         icon: 'category-development',
         color: 'red',
         tools: [
           {
             id: 601,
-            name: '智能代码生成',
-            description: '生成高质量代码',
-            icon: 'calculator-tool',
-            url: '/pages/tools/code-assistant/index'
+            name: '作业检查',
+            description: '快速提升学习成绩',
+            icon: 'homework-check',
+            url: '/pages/tools/homework-checker/index'
           }
         ]
       },

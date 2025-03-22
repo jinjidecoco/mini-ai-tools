@@ -7,9 +7,8 @@
     "pages/tools/image-enhancement/index",
     "pages/tools/voice-transcription/index",
     "pages/tools/document-analysis/index",
-    "pages/tools/code-assistant/index",
     "pages/tools/schedule-planner/index",
-    "pages/tools/language-translator/index",
+    "pages/tools/translator/index",
     "pages/tools/data-visualizer/index",
     "pages/settings/settings",
     "pages/logs/logs",
@@ -35,11 +34,11 @@
     }
   },
   "tabBar": {
-    "custom": false,
+    "custom": true,
     "color": "#6B7280",
     "selectedColor": "#3B82F6",
     "backgroundColor": "#FFFFFF",
-    "borderStyle": "white",
+    "borderStyle": "black",
     "list": [
       {
         "pagePath": "pages/index/index",
