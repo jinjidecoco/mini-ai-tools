@@ -32,7 +32,7 @@
     <view class="tools-section">
       <view class="section-title-row">
         <text class="section-title">快速工具</text>
-        <view class="view-all" hover-class="view-all-hover" bindtap="navigateToToolsList">
+        <view class="view-all" hover-class="view-all-hover" bindtap="navigateToCategory">
           <text>查看全部</text>
           <image class="arrow-icon" src="../../assets/icons/arrow-right.svg"></image>
         </view>
@@ -40,7 +40,7 @@
 
       <view class="quick-tools">
         <view wx:for="{{quickTools}}" wx:key="id" class="tool-grid-item" hover-class="item-hover" bindtap="handleToolClick" data-url="{{item.url}}">
-          <view class="tool-grid-icon" style="background-color: {{item.color}}">
+          <view class="tool-grid-icon">
             <image src="{{item.icon}}" mode="aspectFit"></image>
           </view>
           <text class="tool-grid-name">{{item.name}}</text>
@@ -52,7 +52,7 @@
     <view class="tools-section">
       <view class="section-title-row">
         <text class="section-title">热门工具</text>
-        <view class="view-all" hover-class="view-all-hover" bindtap="navigateToToolsList">
+        <view class="view-all" hover-class="view-all-hover" bindtap="navigateToCategory">
           <text>查看全部</text>
           <image class="arrow-icon" src="../../assets/icons/arrow-right.svg"></image>
         </view>
@@ -60,11 +60,23 @@
 
       <view class="popular-tools">
         <view wx:for="{{popularTools}}" wx:key="id" class="tool-card" hover-class="card-hover" bindtap="handleToolClick" data-url="{{item.url}}">
-          <view class="tool-card-icon" style="background-color: {{item.color}}">
+          <view class="tool-card-icon">
             <image src="{{item.icon}}" mode="aspectFit"></image>
           </view>
           <view class="tool-card-content">
             <text class="tool-card-title">{{item.name}}</text>
+            <view class="tool-card-meta">
+              <text class="tool-card-desc">{{item.description}}</text>
+              <view class="tool-card-stats">
+                <view class="tool-card-usage">
+                  <image src="../../assets/icons/users.svg" mode="aspectFit"></image>
+                  <text>{{item.usageCount}}</text>
+                </view>
+                <view class="tool-card-tags">
+                  <view class="tool-tag" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this">{{tag}}</view>
+                </view>
+              </view>
+            </view>
           </view>
         </view>
       </view>
@@ -83,7 +95,7 @@
       <scroll-view class="recent-scroll" scroll-x enhanced show-scrollbar="{{false}}" fast-deceleration="{{true}}">
         <view wx:for="{{recentTools}}" wx:key="id" class="recent-tool" hover-class="card-hover" bindtap="handleToolClick" data-url="{{item.url}}">
           <view class="recent-tool-header">
-            <view class="recent-tool-icon" style="background-color: {{item.color}}">
+            <view class="recent-tool-icon">
               <image src="{{item.icon}}" mode="aspectFit"></image>
             </view>
             <text class="recent-tool-name">{{item.name}}</text>

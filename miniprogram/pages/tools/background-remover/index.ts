@@ -28,7 +28,10 @@ Page({
     resultFormat: 'png', // png, jpg
     transparentBg: true,
     customBgColor: '#ffffff',
-    showSettings: true
+    showSettings: true,
+    processingProgress: 0,
+    imageAnalysisComplete: false,
+    showHistory: false
   },
 
   onLoad() {
@@ -61,7 +64,9 @@ Page({
             timestamp: Date.now()
           },
           errorMessage: '',
-          processedImage: null
+          processedImage: null,
+          processingProgress: 0,
+          imageAnalysisComplete: false
         });
       },
       fail: (err) => {
@@ -87,9 +92,9 @@ Page({
     });
   },
 
-  toggleTransparent() {
+  toggleTransparent(e: any) {
     this.setData({
-      transparentBg: !this.data.transparentBg
+      transparentBg: e.detail.value
     });
   },
 
@@ -105,107 +110,168 @@ Page({
     });
   },
 
+  toggleHistory() {
+    this.setData({
+      showHistory: !this.data.showHistory
+    });
+  },
+
   processImage() {
-    if (!this.data.currentImage) {
-      this.setData({
-        errorMessage: '请先选择图片'
-      });
-      return;
-    }
+    if (!this.data.currentImage) return;
 
     this.setData({
       isProcessing: true,
+      processingProgress: 0,
+      imageAnalysisComplete: false,
       errorMessage: ''
     });
 
-    // 模拟处理延迟
-    setTimeout(() => {
-      const originalPath = this.data.currentImage!.path;
+    // 模拟处理进度
+    this.simulateProcessingProgress();
+  },
 
-      // 模拟处理后的图片路径（实际应用中，这里应该是经过AI处理后的图片）
-      // 这里我们简单复用原图，实际应用中需要替换成处理后的图片
-      const processedPath = originalPath;
-
-      const background = this.data.transparentBg ? 'transparent' : this.data.customBgColor;
-
-      // 创建新的处理记录
-      const newProcessedImage: ProcessedImage = {
-        id: Date.now(),
-        originalPath,
-        processedPath,
-        timestamp: Date.now(),
-        background
-      };
-
-      // 更新历史记录
-      const updatedHistory = [newProcessedImage, ...this.data.processedImages].slice(0, 10);
-      wx.setStorageSync('backgroundRemoverHistory', updatedHistory);
-
+  // 模拟处理进度
+  simulateProcessingProgress() {
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+      progress += 5;
       this.setData({
-        processedImage: newProcessedImage,
-        processedImages: updatedHistory,
-        isProcessing: false
+        processingProgress: progress
       });
 
-      wx.showToast({
-        title: '背景去除成功',
-        icon: 'success'
-      });
-    }, 2000);
+      if (progress === 50) {
+        this.setData({
+          imageAnalysisComplete: true
+        });
+      }
+
+      if (progress >= 100) {
+        clearInterval(progressInterval);
+
+        // 模拟API调用延时
+        setTimeout(() => {
+          this.completeImageProcessing();
+        }, 500);
+      }
+    }, 100);
+  },
+
+  // 完成图像处理
+  completeImageProcessing() {
+    const currentImage = this.data.currentImage;
+    if (!currentImage) return;
+
+    // 这里在实际应用中会得到API返回的处理后图片
+    // 这里为了演示，我们使用原图作为处理后的图像
+    const processedImage: ProcessedImage = {
+      id: Date.now(),
+      originalPath: currentImage.path,
+      processedPath: currentImage.path, // 实际情况应该是处理后的图像路径
+      timestamp: Date.now(),
+      background: this.data.transparentBg ? 'transparent' : this.data.customBgColor
+    };
+
+    const processedImages = [processedImage, ...this.data.processedImages];
+    if (processedImages.length > 20) {
+      processedImages.pop();
+    }
+
+    this.setData({
+      processedImage,
+      processedImages,
+      isProcessing: false
+    });
+
+    // 保存到本地存储
+    wx.setStorageSync('backgroundRemoverHistory', processedImages);
+
+    wx.showToast({
+      title: '处理完成',
+      icon: 'success'
+    });
   },
 
   viewHistoryImage(e: any) {
-    const imageId = e.currentTarget.dataset.id;
-    const selectedImage = this.data.processedImages.find(img => img.id === imageId);
-    if (selectedImage) {
-      this.setData({
-        processedImage: selectedImage,
-        currentImage: {
-          id: selectedImage.id,
-          path: selectedImage.originalPath,
-          size: '查看历史记录',
-          timestamp: selectedImage.timestamp
-        },
-        transparentBg: selectedImage.background === 'transparent',
-        customBgColor: selectedImage.background !== 'transparent' ? selectedImage.background || '#ffffff' : '#ffffff'
-      });
-    }
-  },
+    const id = e.currentTarget.dataset.id;
+    const image = this.data.processedImages.find(item => item.id === id);
 
-  saveImage() {
-    if (this.data.processedImage) {
-      wx.saveImageToPhotosAlbum({
-        filePath: this.data.processedImage.processedPath,
-        success: () => {
-          wx.showToast({
-            title: '保存成功',
-            icon: 'success'
-          });
-        },
-        fail: (err) => {
-          console.error('保存图片失败', err);
-          this.setData({
-            errorMessage: '保存图片失败，请重试'
-          });
+    if (image) {
+      this.setData({
+        showHistory: false,
+        processedImage: image,
+        currentImage: {
+          id: image.id,
+          path: image.originalPath,
+          size: '', // 这里无法获取到原始大小，可以根据实际情况调整
+          timestamp: image.timestamp
         }
       });
     }
   },
 
+  deleteHistoryImage(e: any) {
+    const id = e.currentTarget.dataset.id;
+    const processedImages = this.data.processedImages.filter(item => item.id !== id);
+
+    this.setData({
+      processedImages
+    });
+
+    wx.setStorageSync('backgroundRemoverHistory', processedImages);
+
+    wx.showToast({
+      title: '已删除',
+      icon: 'success'
+    });
+  },
+
+  saveImage() {
+    if (!this.data.processedImage) return;
+
+    const filePath = this.data.processedImage.processedPath;
+
+    wx.saveImageToPhotosAlbum({
+      filePath,
+      success: () => {
+        wx.showToast({
+          title: '已保存到相册',
+          icon: 'success'
+        });
+      },
+      fail: (err) => {
+        console.error('保存图片失败', err);
+        wx.showToast({
+          title: '保存失败，请重试',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
   shareImage() {
-    if (this.data.processedImage) {
-      wx.showShareMenu({
-        withShareTicket: true,
-        menus: ['shareAppMessage', 'shareTimeline']
-      });
-    }
+    if (!this.data.processedImage) return;
+
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    });
   },
 
   clearImage() {
     this.setData({
       currentImage: null,
       processedImage: null,
-      errorMessage: ''
+      errorMessage: '',
+      processingProgress: 0,
+      imageAnalysisComplete: false
     });
+  },
+
+  onShareAppMessage() {
+    return {
+      title: '我使用AI工具轻松去除了图片背景',
+      path: '/pages/tools/background-remover/index',
+      imageUrl: this.data.processedImage ? this.data.processedImage.processedPath : ''
+    };
   }
 });

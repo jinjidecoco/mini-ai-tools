@@ -1,0 +1,230 @@
+<view class="container">
+  <!-- Custom Navigation Bar -->
+  <view class="custom-nav">
+    <view class="nav-back" bindtap="goBack">
+      <text class="nav-back-icon">←</text>
+    </view>
+    <view class="nav-title">二维码生成器</view>
+  </view>
+
+  <!-- Type Selection -->
+  <view class="type-selector">
+    <view class="type-option {{qrCodeType === 'text' ? 'active' : ''}}" bindtap="selectQRCodeType" data-type="text">
+      <text>文本</text>
+    </view>
+    <view class="type-option {{qrCodeType === 'url' ? 'active' : ''}}" bindtap="selectQRCodeType" data-type="url">
+      <text>网址</text>
+    </view>
+    <view class="type-option {{qrCodeType === 'wifi' ? 'active' : ''}}" bindtap="selectQRCodeType" data-type="wifi">
+      <text>WiFi</text>
+    </view>
+    <view class="type-option {{qrCodeType === 'contact' ? 'active' : ''}}" bindtap="selectQRCodeType" data-type="contact">
+      <text>联系人</text>
+    </view>
+  </view>
+
+  <!-- Content Input Section -->
+  <view class="input-section">
+    <block wx:if="{{qrCodeType === 'text'}}">
+      <textarea
+        class="content-input"
+        placeholder="输入要生成二维码的文本内容"
+        value="{{content}}"
+        bindinput="onContentInput"
+        maxlength="{{contentMaxLength}}"
+      ></textarea>
+      <view class="char-count">{{content.length}}/{{contentMaxLength}}</view>
+    </block>
+
+    <block wx:elif="{{qrCodeType === 'url'}}">
+      <input
+        class="content-input url-input"
+        placeholder="输入网址"
+        value="{{content}}"
+        bindinput="onContentInput"
+      />
+      <view class="hint-text">自动添加 https:// 前缀（如未输入）</view>
+    </block>
+
+    <block wx:elif="{{qrCodeType === 'wifi'}}">
+      <view class="form-item">
+        <text class="form-label">WiFi名称</text>
+        <input
+          class="form-input"
+          placeholder="输入WiFi名称"
+          value="{{wifiData.ssid}}"
+          bindinput="onWifiSSIDInput"
+        />
+      </view>
+      <view class="form-item">
+        <text class="form-label">密码</text>
+        <input
+          class="form-input"
+          placeholder="输入WiFi密码"
+          value="{{wifiData.password}}"
+          bindinput="onWifiPasswordInput"
+          password="{{true}}"
+        />
+      </view>
+      <view class="form-item">
+        <text class="form-label">加密类型</text>
+        <picker
+          bindchange="onWifiEncryptionChange"
+          value="{{wifiData.encryption}}"
+          range="{{['WPA', 'WEP', 'None']}}"
+        >
+          <view class="picker">
+            {{wifiData.encryption}}
+          </view>
+        </picker>
+      </view>
+    </block>
+
+    <block wx:elif="{{qrCodeType === 'contact'}}">
+      <view class="form-item">
+        <text class="form-label">姓名</text>
+        <input
+          class="form-input"
+          placeholder="输入联系人姓名"
+          value="{{contactData.name}}"
+          bindinput="onContactNameInput"
+        />
+      </view>
+      <view class="form-item">
+        <text class="form-label">电话</text>
+        <input
+          class="form-input"
+          placeholder="输入联系人电话"
+          value="{{contactData.phone}}"
+          bindinput="onContactPhoneInput"
+          type="number"
+        />
+      </view>
+      <view class="form-item">
+        <text class="form-label">邮箱</text>
+        <input
+          class="form-input"
+          placeholder="输入联系人邮箱"
+          value="{{contactData.email}}"
+          bindinput="onContactEmailInput"
+        />
+      </view>
+      <view class="form-item">
+        <text class="form-label">地址</text>
+        <input
+          class="form-input"
+          placeholder="输入联系人地址"
+          value="{{contactData.address}}"
+          bindinput="onContactAddressInput"
+        />
+      </view>
+    </block>
+
+    <view class="advanced-toggle" bindtap="toggleAdvancedOptions">
+      <text>高级选项</text>
+      <text class="toggle-icon">{{showAdvancedOptions ? '▲' : '▼'}}</text>
+    </view>
+
+    <view class="advanced-options" wx:if="{{showAdvancedOptions}}">
+      <view class="form-item">
+        <text class="form-label">颜色</text>
+        <view class="color-picker">
+          <color-picker bindchange="onColorChange" value="{{colorDark}}" />
+          <view class="color-preview" style="background-color: {{colorDark}};"></view>
+        </view>
+      </view>
+
+      <view class="form-item">
+        <text class="form-label">添加Logo</text>
+        <switch checked="{{enableLogo}}" bindchange="toggleLogoOption" />
+      </view>
+
+      <view class="logo-section" wx:if="{{enableLogo}}">
+        <button class="logo-btn" bindtap="chooseLogoImage">选择Logo图片</button>
+        <image wx:if="{{logoImage}}" class="logo-preview" src="{{logoImage}}" mode="aspectFit"></image>
+      </view>
+    </view>
+
+    <view class="button-row">
+      <button class="btn btn-clear" bindtap="clearInput">清空</button>
+      <button class="btn btn-generate" bindtap="generateQRCode" loading="{{isGenerating}}">
+        {{isGenerating ? '生成中...' : '生成二维码'}}
+      </button>
+    </view>
+  </view>
+
+  <!-- QR Code Display Section -->
+  <view class="qrcode-display" wx:if="{{qrCodeImage}}">
+    <image class="qrcode-image" src="{{qrCodeImage}}" mode="aspectFit"></image>
+
+    <view class="action-buttons">
+      <button class="action-btn" bindtap="saveQRCode">
+        <text class="action-icon">💾</text>
+        <text>保存</text>
+      </button>
+      <button class="action-btn" bindtap="shareQRCode">
+        <text class="action-icon">↗️</text>
+        <text>分享</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- History Toggle -->
+  <view class="history-toggle" bindtap="toggleHistory">
+    <text>历史记录</text>
+    <text class="toggle-icon">{{showHistory ? '▲' : '▼'}}</text>
+  </view>
+
+  <!-- History Section -->
+  <view class="history-section" wx:if="{{showHistory}}">
+    <view class="history-header">
+      <text>历史记录</text>
+      <text class="clear-history" bindtap="clearHistory">清空</text>
+    </view>
+
+    <view class="history-list" wx:if="{{history.length > 0}}">
+      <view class="history-item" wx:for="{{history}}" wx:key="id" bindtap="viewHistoryItem" data-id="{{item.id}}">
+        <view class="history-info">
+          <view class="history-type">
+            <text wx:if="{{item.type === 'text'}}">文本</text>
+            <text wx:elif="{{item.type === 'url'}}">网址</text>
+            <text wx:elif="{{item.type === 'wifi'}}">WiFi</text>
+            <text wx:elif="{{item.type === 'contact'}}">联系人</text>
+          </view>
+          <view class="history-content">{{item.content}}</view>
+          <view class="history-date">{{item.timestamp}}</view>
+        </view>
+        <view class="history-delete" catchtap="deleteHistoryItem" data-id="{{item.id}}">
+          <text>×</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-history" wx:else>
+      <text>暂无历史记录</text>
+    </view>
+  </view>
+</view>
+
+<!-- WXS Module for Date Formatting -->
+<wxs module="dateFormat">
+  function formatTime(timestamp) {
+    var date = getDate(timestamp);
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+    var hour = date.getHours();
+    var minute = date.getMinutes();
+
+    return year + '-' + formatNumber(month) + '-' + formatNumber(day) + ' ' + formatNumber(hour) + ':' + formatNumber(minute);
+  }
+
+  function formatNumber(n) {
+    n = n.toString();
+    return n[1] ? n : '0' + n;
+  }
+
+  module.exports = {
+    formatTime: formatTime
+  };
+</wxs>

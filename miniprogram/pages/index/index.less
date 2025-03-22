@@ -290,68 +290,96 @@ page {
 
 // 热门工具卡片 - 现代科技感卡片
 .popular-tools {
-  display: flex;
-  flex-direction: column;
-  gap: 24rpx;
-  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 16rpx;
+  margin-top: 24rpx;
 
   .tool-card {
+    background-color: #FFFFFF;
+    border-radius: 16rpx;
+    padding: 24rpx;
     display: flex;
     align-items: flex-start;
-    background-color: @white;
-    border-radius: 28rpx;
-    padding: 28rpx;
-    box-shadow: @shadow-sm;
-    transition: transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
 
     &:active {
       transform: scale(0.98);
-      box-shadow: @shadow-sm;
+      opacity: 0.95;
     }
 
     .tool-card-icon {
-      width: 104rpx;
-      height: 104rpx;
-      border-radius: 28rpx;
+      width: 80rpx;
+      height: 80rpx;
+      border-radius: 16rpx;
       display: flex;
-      justify-content: center;
       align-items: center;
-      margin-right: 28rpx;
+      justify-content: center;
+      margin-right: 20rpx;
       flex-shrink: 0;
       background-color: @blue-lighter;
-      position: relative;
-      overflow: hidden;
-
-      &::after {
-        content: '';
-        position: absolute;
-        top: -20rpx;
-        right: -20rpx;
-        width: 80rpx;
-        height: 80rpx;
-        border-radius: 40rpx;
-        background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.2));
-        opacity: 0.4;
-      }
 
       image {
-        width: 52rpx;
-        height: 52rpx;
-        position: relative;
-        z-index: 1;
+        width: 48rpx;
+        height: 48rpx;
       }
     }
 
     .tool-card-content {
       flex: 1;
-      min-width: 0;
 
       .tool-card-title {
         font-size: 32rpx;
         font-weight: 600;
-        color: @text-primary;
+        color: #111827;
         margin-bottom: 8rpx;
-        display: block;
+      }
+
+      .tool-card-meta {
+        .tool-card-desc {
+          font-size: 26rpx;
+          color: #6B7280;
+          line-height: 1.4;
+          display: block;
+          margin-bottom: 12rpx;
+        }
+
+        .tool-card-stats {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          .tool-card-usage {
+            display: flex;
+            align-items: center;
+
+            image {
+              width: 24rpx;
+              height: 24rpx;
+              margin-right: 6rpx;
+            }
+
+            text {
+              font-size: 22rpx;
+              color: #6B7280;
+            }
+          }
+
+          .tool-card-tags {
+            display: flex;
+            flex-wrap: wrap;
+
+            .tool-tag {
+              font-size: 20rpx;
+              color: #4B5563;
+              background-color: #F3F4F6;
+              padding: 4rpx 12rpx;
+              border-radius: 100rpx;
+              margin-left: 8rpx;
+            }
+          }
+        }
       }
     }
   }
