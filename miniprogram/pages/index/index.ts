@@ -297,6 +297,7 @@ Page({
         url: "/pages/tools/schedule-planner/index",
       },
     ],
+    isLoggedIn: false
   },
 
   // 处理搜索按钮点击
@@ -330,18 +331,50 @@ Page({
   // 工具点击处理函数
   handleToolClick(e: any) {
     const url = e.currentTarget.dataset.url
-    if (url) {
-      wx.navigateTo({
-        url,
-      })
+    const needLogin = e.currentTarget.dataset.needLogin === 'true';
+
+    if (needLogin && !this.data.isLoggedIn) {
+      wx.showModal({
+        title: '提示',
+        content: '该功能需要登录后使用，是否前往登录？',
+        confirmText: '去登录',
+        cancelText: '取消',
+        success: (res) => {
+          if (res.confirm) {
+            const app = getApp<IAppOption>();
+            app.navigateToLogin(url);
+          }
+        }
+      });
+      return;
     }
+
+  
+
+    // 导航到工具页面
+    wx.navigateTo({
+      url: url
+    });
   },
 
   onLoad: function () {
-    // 初始化页面数据
+    this.loadToolsData();
+    this.checkLoginStatus();
   },
 
   onShow: function () {
-    // 页面显示时更新数据
+    // 页面显示时刷新最近使用的工具和登录状态
+    this.loadRecentTools();
+    this.checkLoginStatus();
   },
+
+  // 检查登录状态
+  checkLoginStatus() {
+    const app = getApp<IAppOption>();
+    this.setData({
+      isLoggedIn: app.globalData.isLoggedIn
+    });
+  },
+
+  // 其他方法保持不变...
 })

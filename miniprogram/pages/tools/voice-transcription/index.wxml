@@ -7,7 +7,7 @@
     </view>
     <text class="nav-title">语音转文字</text>
     <view class="nav-action" bindtap="toggleSettings" wx:if="{{!showSettings}}">
-      <image src="../../../../assets/icons/settings.svg" mode="aspectFit"></image>
+      <image class="settings-icon" src="../../../assets/icons/settings.svg" mode="aspectFit"></image>
     </view>
     <view class="nav-placeholder" wx:else></view>
   </view>
@@ -16,23 +16,21 @@
     <!-- 录音区域 -->
     <view class="record-section" wx:if="{{!transcriptText && !isTranscribing}}">
       <view class="record-card">
-        <image class="record-icon {{isRecording ? 'recording' : ''}}"
-               src="../../../../assets/icons/mic.svg"
-               mode="aspectFit"></image>
+        <image class="mic-icon" src="../../../assets/icons/mic.svg" mode="aspectFit"></image>
         <text class="record-text">{{isRecording ? '正在录音...' : '点击开始录音'}}</text>
         <text class="record-time" wx:if="{{isRecording}}">{{recordTime}}</text>
         <text class="record-hint">轻触麦克风图标开始/停止录音</text>
       </view>
 
       <view class="record-button {{isRecording ? 'recording' : ''}}" bindtap="toggleRecording">
-        <image src="../../../../assets/icons/{{isRecording ? 'audio-wave' : 'mic'}}.svg" mode="aspectFit"></image>
+        <image src="./assets/icons/{{isRecording ? 'audio-wave' : 'mic'}}.svg" mode="aspectFit"></image>
         <text>{{isRecording ? '停止录音' : '开始录音'}}</text>
       </view>
 
       <view class="upload-option">
         <text>或</text>
         <view class="upload-button" bindtap="chooseAudioFile">
-          <image src="../../../../assets/icons/upload.svg" mode="aspectFit"></image>
+          <image class="upload-icon" src="../../../assets/icons/upload.svg" mode="aspectFit"></image>
           <text>上传音频文件</text>
         </view>
         <text class="upload-hint">支持MP3、WAV、M4A格式，大小不超过10MB</text>
@@ -51,7 +49,7 @@
       <view class="panel-header">
         <text class="panel-title">转录设置</text>
         <view class="panel-close" bindtap="toggleSettings">
-          <image src="../../../../assets/icons/close.svg" mode="aspectFit"></image>
+          <image class="close-icon" src="../../../assets/icons/close.svg" mode="aspectFit"></image>
         </view>
       </view>
 
@@ -104,10 +102,10 @@
         <text class="result-title">转录结果</text>
         <view class="result-actions">
           <view class="result-action" bindtap="copyText">
-            <image src="../../../../assets/icons/copy.svg" mode="aspectFit"></image>
+            <image src="./assets/icons/copy.svg" mode="aspectFit"></image>
           </view>
           <view class="result-action" bindtap="clearResult">
-            <image src="../../../../assets/icons/trash.svg" mode="aspectFit"></image>
+            <image src="./assets/icons/trash.svg" mode="aspectFit"></image>
           </view>
         </view>
       </view>
@@ -118,11 +116,11 @@
 
       <view class="action-buttons">
         <view class="action-button primary" bindtap="saveTranscript">
-          <image src="../../../../assets/icons/save.svg" mode="aspectFit"></image>
+          <image src="./assets/icons/save.svg" mode="aspectFit"></image>
           <text>保存转录</text>
         </view>
         <view class="action-button secondary" bindtap="newTranscription">
-          <image src="../../../../assets/icons/refresh.svg" mode="aspectFit"></image>
+          <image src="./assets/icons/refresh.svg" mode="aspectFit"></image>
           <text>新建转录</text>
         </view>
       </view>
@@ -133,7 +131,7 @@
       <view class="tips-header">
         <text class="tips-title">使用提示</text>
         <view class="tips-close" bindtap="hideTips">
-          <image src="../../../../assets/icons/close.svg" mode="aspectFit"></image>
+          <image src="./assets/icons/close.svg" mode="aspectFit"></image>
         </view>
       </view>
       <view class="tips-content">
@@ -170,7 +168,7 @@
               bindtap="viewHistoryItem"
               data-id="{{item.id}}">
           <view class="history-icon">
-            <image src="../../../../assets/icons/transcript.svg" mode="aspectFit"></image>
+            <image src="./assets/icons/transcript.svg" mode="aspectFit"></image>
           </view>
           <view class="history-content">
             <text class="history-title">{{item.title}}</text>
@@ -179,7 +177,7 @@
           <view class="history-action"
                 catchtap="deleteHistoryItem"
                 data-id="{{item.id}}">
-            <image src="../../../../assets/icons/trash.svg" mode="aspectFit"></image>
+            <image src="./assets/icons/trash.svg" mode="aspectFit"></image>
           </view>
         </view>
       </view>

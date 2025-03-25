@@ -91,57 +91,15 @@ Page({
   },
 
   onLoad() {
-    // Initialize recorder
-    const recorderManager = wx.getRecorderManager();
+    // 检查登录状态
+    const app = getApp<IAppOption>();
+    const isLoggedIn = app.checkAndNavigateToLogin('/pages/tools/voice-transcription/index');
 
-    recorderManager.onStart(() => {
-      this.setData({
-        isRecording: true,
-        isPaused: false,
-        errorMessage: ''
-      });
-      this.startTimer();
-    });
-
-    recorderManager.onPause(() => {
-      this.setData({
-        isPaused: true
-      });
-      this.pauseTimer();
-    });
-
-    recorderManager.onResume(() => {
-      this.setData({
-        isPaused: false
-      });
-      this.startTimer();
-    });
-
-    recorderManager.onStop((res) => {
-      this.stopTimer();
-      this.setData({
-        isRecording: false,
-        isPaused: false,
-        tempFilePath: res.tempFilePath
-      });
-    });
-
-    recorderManager.onError((res) => {
-      this.stopTimer();
-      this.setData({
-        isRecording: false,
-        isPaused: false,
-        showError: true,
-        errorMessage: `录音失败: ${res.errMsg}`
-      });
-    });
-
-    this.setData({
-      recorderManager
-    });
-
-    // Load history from storage
-    this.loadHistory();
+    if (isLoggedIn) {
+      // 用户已登录，继续加载页面
+      this.initRecorderManager();
+      this.loadHistory();
+    }
   },
 
   onUnload() {
@@ -586,5 +544,56 @@ Page({
       const minutes = Math.floor((seconds % 3600) / 60);
       return `${hours}小时${minutes > 0 ? minutes + '分' : ''}`;
     }
+  },
+
+  initRecorderManager() {
+    // Initialize recorder
+    const recorderManager = wx.getRecorderManager();
+
+    recorderManager.onStart(() => {
+      this.setData({
+        isRecording: true,
+        isPaused: false,
+        errorMessage: ''
+      });
+      this.startTimer();
+    });
+
+    recorderManager.onPause(() => {
+      this.setData({
+        isPaused: true
+      });
+      this.pauseTimer();
+    });
+
+    recorderManager.onResume(() => {
+      this.setData({
+        isPaused: false
+      });
+      this.startTimer();
+    });
+
+    recorderManager.onStop((res) => {
+      this.stopTimer();
+      this.setData({
+        isRecording: false,
+        isPaused: false,
+        tempFilePath: res.tempFilePath
+      });
+    });
+
+    recorderManager.onError((res) => {
+      this.stopTimer();
+      this.setData({
+        isRecording: false,
+        isPaused: false,
+        showError: true,
+        errorMessage: `录音失败: ${res.errMsg}`
+      });
+    });
+
+    this.setData({
+      recorderManager
+    });
   }
 });

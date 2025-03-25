@@ -9,133 +9,93 @@
     <view class="nav-placeholder"></view>
   </view>
 
-  <!-- 主内容 -->
+  <!-- 主内容区域 -->
   <view class="tool-content">
-    <!-- 图片选择区域 -->
-    <view class="upload-section" wx:if="{{!originalImage}}">
+    <!-- 上传区域 - 未选择图片时显示 -->
+    <view class="upload-section" wx:if="{{!originalImage && !isLoading}}">
       <view class="upload-card" bindtap="chooseImage">
-        <image class="upload-icon" src="../../../assets/icons/upload-image.svg" mode="aspectFit"></image>
+        <image class="upload-icon" src="../../../assets/icons/upload.svg" mode="aspectFit"></image>
         <text class="upload-text">点击上传图片</text>
-        <text class="upload-hint">支持PNG、JPG、JPEG格式图片</text>
+        <text class="upload-tip">支持PNG、JPG、JPEG格式图片</text>
       </view>
-    </view>
 
-    <!-- 功能提示 -->
-    <view class="tips-section" wx:if="{{!originalImage}}">
-      <view class="tips-card">
+      <!-- 使用技巧 -->
+      <view class="tips-card" wx:if="{{showTips}}">
         <view class="tips-header">
           <text class="tips-title">使用技巧</text>
-          <view class="tips-close" bindtap="closeTips">
-            <image src="../../../assets/icons/close.svg" mode="aspectFit"></image>
-          </view>
+          <view class="close-btn" bindtap="hideTips">×</view>
         </view>
-        <view class="tips-content">
-          <view class="tip-item">
-            <view class="tip-num">1</view>
-            <text>上传需要去除水印的图片</text>
-          </view>
-          <view class="tip-item">
-            <view class="tip-num">2</view>
-            <text>选择水印去除模式（通用、文字、图片等）</text>
-          </view>
-          <view class="tip-item">
-            <view class="tip-num">3</view>
-            <text>点击"开始处理"，等待AI自动去除水印</text>
-          </view>
-          <view class="tip-item">
-            <view class="tip-num">4</view>
-            <text>处理完成后，可保存或分享处理后的图片</text>
-          </view>
+        <view class="tips-list">
+          <view class="tip-item">1.上传需要去除水印的图片</view>
+          <view class="tip-item">2.选择水印去除模式（通用、文字、图片等）</view>
+          <view class="tip-item">3.点击"开始处理"，等待AI自动去除水印</view>
+          <view class="tip-item">4.处理完成后，可保存或分享处理后的图片</view>
         </view>
       </view>
     </view>
 
-    <!-- 图片处理区域 -->
-    <view class="process-section" wx:if="{{originalImage}}">
-      <!-- 图片展示区 -->
-      <view class="image-preview-container">
-        <view class="image-preview">
-          <image src="{{originalImage}}" mode="aspectFit"></image>
-          <view class="image-info">原图</view>
-        </view>
-        <view class="image-preview result" wx:if="{{processedImage}}">
-          <image src="{{processedImage}}" mode="aspectFit"></image>
-          <view class="image-info">处理后</view>
-        </view>
+    <!-- 已选择图片区域 - 显示原图并提供处理选项 -->
+    <view class="image-preview" wx:if="{{originalImage && !showResult && !isLoading}}">
+      <view class="preview-header">
+        <text class="preview-title">原图</text>
       </view>
-
-      <!-- 处理选项 -->
-      <view class="process-options" wx:if="{{!isProcessing && !processedImage}}">
-        <view class="option-group">
-          <view class="option-title">水印去除模式</view>
-          <view class="mode-buttons">
-            <view class="mode-button {{mode === 'auto' ? 'active' : ''}}" data-mode="auto" bindtap="selectMode">通用模式</view>
-            <view class="mode-button {{mode === 'text' ? 'active' : ''}}" data-mode="text" bindtap="selectMode">文字水印</view>
-            <view class="mode-button {{mode === 'image' ? 'active' : ''}}" data-mode="image" bindtap="selectMode">图片水印</view>
-            <view class="mode-button {{mode === 'complex' ? 'active' : ''}}" data-mode="complex" bindtap="selectMode">复杂水印</view>
+      <image class="preview-image" src="{{originalImage}}" mode="aspectFit"></image>
+      <view class="watermark-options">
+        <text class="options-title">水印类型</text>
+        <view class="options-group">
+          <view class="option-item {{watermarkType === 'auto' ? 'active' : ''}}" bindtap="setWatermarkType" data-type="auto">
+            <text>自动识别</text>
           </view>
-        </view>
-
-        <view class="option-group">
-          <view class="option-title">处理质量</view>
-          <view class="mode-buttons">
-            <view class="mode-button {{quality === 'high' ? 'active' : ''}}" data-quality="high" bindtap="selectQuality">高质量</view>
-            <view class="mode-button {{quality === 'medium' ? 'active' : ''}}" data-quality="medium" bindtap="selectQuality">中等</view>
-            <view class="mode-button {{quality === 'low' ? 'active' : ''}}" data-quality="low" bindtap="selectQuality">快速</view>
+          <view class="option-item {{watermarkType === 'text' ? 'active' : ''}}" bindtap="setWatermarkType" data-type="text">
+            <text>文字水印</text>
           </view>
-        </view>
-
-        <view class="option-group">
-          <view class="option-switch">
-            <text>保留原始尺寸</text>
-            <switch checked="{{keepSize}}" bindchange="toggleKeepSize" color="#3B82F6"></switch>
+          <view class="option-item {{watermarkType === 'logo' ? 'active' : ''}}" bindtap="setWatermarkType" data-type="logo">
+            <text>Logo水印</text>
           </view>
         </view>
       </view>
-
-      <!-- 操作按钮 -->
       <view class="action-buttons">
-        <block wx:if="{{!processedImage}}">
-          <view class="action-button process" bindtap="processImage" wx:if="{{!isProcessing}}">开始处理</view>
-          <view class="action-button process" wx:if="{{isProcessing}}">
-            <image src="../../../assets/icons/loading.svg" mode="aspectFit"></image>
-            <text>处理中...</text>
-          </view>
-          <view class="action-button secondary" bindtap="resetImage" wx:if="{{!isProcessing}}">重新选择</view>
-        </block>
-
-        <block wx:if="{{processedImage}}">
-          <view class="result-actions">
-            <view class="action-button primary" bindtap="saveImage">
-              <image src="../../../assets/icons/download.svg" mode="aspectFit"></image>
-              <text>保存图片</text>
-            </view>
-            <view class="action-button secondary" bindtap="shareImage">
-              <image src="../../../assets/icons/share.svg" mode="aspectFit"></image>
-              <text>分享</text>
-            </view>
-          </view>
-          <view class="action-button tertiary" bindtap="resetImage">处理新图片</view>
-        </block>
-      </view>
-
-      <!-- 错误提示 -->
-      <view class="error-message" wx:if="{{errorMessage}}">
-        <text>{{errorMessage}}</text>
+        <button class="action-button reset" bindtap="resetImage">重新选择</button>
+        <button class="action-button process" bindtap="processImage">开始处理</button>
       </view>
     </view>
 
-    <!-- 历史记录区域 -->
-    <view class="history-section" wx:if="{{historyImages.length > 0}}">
-      <view class="section-header">
-        <text class="section-title">历史记录</text>
+    <!-- 加载中状态 -->
+    <view class="loading-container" wx:if="{{isLoading}}">
+      <view class="loading-status">
+        <image class="original-thumbnail" src="{{originalImage}}" mode="aspectFit"></image>
+        <view class="status-label">原图</view>
       </view>
-      <view class="history-list">
-        <view wx:for="{{historyImages}}" wx:key="id" class="history-item" bindtap="viewHistoryImage" data-id="{{item.id}}">
-          <image src="{{item.thumbnail}}" mode="aspectFill"></image>
-          <view class="history-item-info">{{item.date}}</view>
+      <view class="loading-animation">
+        <view class="spinner"></view>
+        <view class="loading-text">处理中...</view>
+      </view>
+    </view>
+
+    <!-- 处理结果区域 -->
+    <view class="result-area" wx:if="{{showResult}}">
+      <view class="result-header">
+        <text class="result-title">处理结果</text>
+      </view>
+      <view class="image-comparison">
+        <view class="comparison-item">
+          <image class="comparison-image" src="{{originalImage}}" mode="aspectFit"></image>
+          <text class="comparison-label">原图</text>
+        </view>
+        <view class="comparison-item">
+          <image class="comparison-image" src="{{processedImage}}" mode="aspectFit"></image>
+          <text class="comparison-label">去水印</text>
         </view>
       </view>
+      <view class="result-actions">
+        <button class="result-button reset" bindtap="resetImage">重新选择</button>
+        <button class="result-button save" bindtap="saveToAlbum">保存到相册</button>
+      </view>
     </view>
+  </view>
+
+  <!-- 错误提示 -->
+  <view class="error-toast {{showError ? 'show' : ''}}" wx:if="{{showError}}">
+    <text class="error-message">{{errorMessage}}</text>
   </view>
 </view>

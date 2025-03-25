@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/login/index",
     "pages/index/index",
     "pages/categories/index",
     "pages/profile/index",
@@ -10,13 +11,12 @@
     "pages/tools/schedule-planner/index",
     "pages/tools/translator/index",
     "pages/tools/data-visualizer/index",
-    "pages/settings/settings",
+    "pages/settings/index",
     "pages/logs/logs",
     "pages/tools/watermark-remover/index",
     "pages/tools/homework-checker/index",
     "pages/tools/qrcode-generator/index",
     "pages/tools/background-remover/index"
-
 
   ],
   "window": {

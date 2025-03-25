@@ -1,0 +1,43 @@
+<view class="login-container">
+  <view class="login-header">
+    <image class="login-logo" src="../../assets/icons/logo.svg" mode="aspectFit"></image>
+    <text class="login-title">AI工具助手</text>
+    <text class="login-subtitle">登录后体验更多智能功能</text>
+  </view>
+
+  <view class="login-content">
+    <view class="login-card">
+      <view class="login-info">
+        <text class="info-title">登录后您将获得</text>
+        <view class="info-item">
+          <image class="info-icon" src="../../assets/icons/check-circle.svg" mode="aspectFit"></image>
+          <text class="info-text">保存使用记录，随时查看历史</text>
+        </view>
+        <view class="info-item">
+          <image class="info-icon" src="../../assets/icons/check-circle.svg" mode="aspectFit"></image>
+          <text class="info-text">跨设备同步您的数据</text>
+        </view>
+        <view class="info-item">
+          <image class="info-icon" src="../../assets/icons/check-circle.svg" mode="aspectFit"></image>
+          <text class="info-text">获得更多免费使用次数</text>
+        </view>
+      </view>
+
+      <button class="login-button" bindtap="getUserProfile" loading="{{isLoading}}" disabled="{{isLoading}}">
+        <image class="button-icon" src="../../assets/icons/wechat.svg" mode="aspectFit" wx:if="{{!isLoading}}"></image>
+        <text>微信一键登录</text>
+      </button>
+
+      <view class="login-tips">
+        <text class="tips-text">登录即表示您同意</text>
+        <text class="tips-link" bindtap="navigateToTerms">《用户协议》</text>
+        <text class="tips-text">和</text>
+        <text class="tips-link" bindtap="navigateToPrivacy">《隐私政策》</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- <view class="login-footer">
+    <text class="skip-login" bindtap="skipLogin">暂不登录，继续使用</text>
+  </view> -->
+</view>

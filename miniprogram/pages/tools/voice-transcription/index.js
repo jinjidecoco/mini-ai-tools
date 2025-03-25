@@ -1,320 +1,332 @@
 // voice-transcription/index.js
-const recorderManager = wx.getRecorderManager();
-const innerAudioContext = wx.createInnerAudioContext();
-
 Page({
   data: {
     isRecording: false,
-    isPaused: false,
-    recordingTime: 0,
-    recordingDuration: 0,
-    currentAudioUrl: '',
     isTranscribing: false,
-    transcriptionResult: '',
-    selectedMode: 'standard',
-    selectedLanguage: 'zh',
-    transcriptionModes: [
-      {
-        id: 'standard',
-        name: '标准模式',
-        description: '适合一般对话场景',
-        icon: '../../../assets/icons/standard.svg'
-      },
-      {
-        id: 'meeting',
-        name: '会议模式',
-        description: '适合多人会议场景',
-        icon: '../../../assets/icons/meeting.svg'
-      },
-      {
-        id: 'interview',
-        name: '采访模式',
-        description: '适合一对一采访场景',
-        icon: '../../../assets/icons/interview.svg'
-      }
-    ],
-    languages: [
-      { id: 'zh', name: '中文' },
-      { id: 'en', name: '英文' },
-      { id: 'ja', name: '日文' },
-      { id: 'ko', name: '韩文' }
-    ],
-    transcriptionHistory: [],
-    selectedItem: null,
-    timer: null
+    recordTime: '00:00',
+    transcriptText: '',
+    showSettings: false,
+    showTips: true,
+    language: 'zh',
+    quality: 'standard',
+    punctuation: true,
+    history: []
   },
 
-  onLoad() {
-    // 初始化录音管理器
-    this.initRecorderManager();
+  onLoad: function() {
     // 加载历史记录
     this.loadHistory();
   },
 
-  onUnload() {
-    // 清理定时器
-    if (this.data.timer) {
-      clearInterval(this.data.timer);
-    }
-    // 停止录音
-    if (this.data.isRecording) {
-      this.stopRecording();
+  loadHistory: function() {
+    const historyStr = wx.getStorageSync('transcriptHistory') || '[]';
+    try {
+      const history = JSON.parse(historyStr);
+      this.setData({
+        history: history
+      });
+    } catch (e) {
+      console.error('解析历史记录失败', e);
     }
   },
 
-  initRecorderManager() {
+  goBack: function() {
+    wx.navigateBack();
+  },
+
+  toggleSettings: function() {
+    this.setData({
+      showSettings: !this.data.showSettings
+    });
+  },
+
+  hideTips: function() {
+    this.setData({
+      showTips: false
+    });
+    wx.setStorageSync('transcriptTipsShown', true);
+  },
+
+  setLanguage: function(e) {
+    const lang = e.currentTarget.dataset.lang;
+    this.setData({
+      language: lang
+    });
+  },
+
+  setQuality: function(e) {
+    const quality = e.currentTarget.dataset.quality;
+    this.setData({
+      quality: quality
+    });
+  },
+
+  togglePunctuation: function() {
+    this.setData({
+      punctuation: !this.data.punctuation
+    });
+  },
+
+  toggleRecording: function() {
+    if (this.data.isRecording) {
+      this.stopRecording();
+    } else {
+      this.startRecording();
+    }
+  },
+
+  startRecording: function() {
+    const recorderManager = wx.getRecorderManager();
+
     recorderManager.onStart(() => {
       console.log('录音开始');
-      this.setData({ isRecording: true });
+      this.setData({
+        isRecording: true
+      });
+
+      // 开始计时
       this.startTimer();
     });
 
-    recorderManager.onPause(() => {
-      console.log('录音暂停');
-      this.setData({ isPaused: true });
-      this.pauseTimer();
+    recorderManager.onError((res) => {
+      console.error('录音失败', res);
+      wx.showToast({
+        title: '录音失败',
+        icon: 'none'
+      });
+      this.setData({
+        isRecording: false
+      });
     });
 
-    recorderManager.onResume(() => {
-      console.log('录音继续');
-      this.setData({ isPaused: false });
-      this.startTimer();
-    });
+    const options = {
+      duration: 600000, // 最长10分钟
+      sampleRate: this.data.quality === 'high' ? 44100 : 16000,
+      numberOfChannels: this.data.quality === 'high' ? 2 : 1,
+      encodeBitRate: this.data.quality === 'high' ? 192000 : 48000,
+      format: 'mp3'
+    };
+
+    recorderManager.start(options);
+  },
+
+  stopRecording: function() {
+    const recorderManager = wx.getRecorderManager();
 
     recorderManager.onStop((res) => {
       console.log('录音结束', res);
       this.setData({
-        isRecording: false,
-        isPaused: false,
-        currentAudioUrl: res.tempFilePath,
-        recordingDuration: this.data.recordingTime
+        isRecording: false
       });
+
+      // 停止计时
       this.stopTimer();
+
+      // 开始转录
+      this.transcribeAudio(res.tempFilePath);
     });
 
-    recorderManager.onError((res) => {
-      console.error('录音错误', res);
-      wx.showToast({
-        title: '录音出错，请重试',
-        icon: 'none'
-      });
-    });
-  },
-
-  startRecording() {
-    const options = {
-      duration: 600000, // 最长录音时间，单位ms
-      sampleRate: 44100,
-      numberOfChannels: 1,
-      encodeBitRate: 192000,
-      format: 'mp3'
-    };
-    recorderManager.start(options);
-  },
-
-  pauseRecording() {
-    recorderManager.pause();
-  },
-
-  resumeRecording() {
-    recorderManager.resume();
-  },
-
-  stopRecording() {
     recorderManager.stop();
   },
 
-  startTimer() {
-    const timer = setInterval(() => {
+  startTimer: function() {
+    let seconds = 0;
+    this.timer = setInterval(() => {
+      seconds++;
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      const formattedTime =
+        (minutes < 10 ? '0' : '') + minutes + ':' +
+        (remainingSeconds < 10 ? '0' : '') + remainingSeconds;
+
       this.setData({
-        recordingTime: this.data.recordingTime + 1
+        recordTime: formattedTime
       });
     }, 1000);
-    this.setData({ timer });
   },
 
-  pauseTimer() {
-    if (this.data.timer) {
-      clearInterval(this.data.timer);
-      this.setData({ timer: null });
+  stopTimer: function() {
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
     }
   },
 
-  stopTimer() {
-    if (this.data.timer) {
-      clearInterval(this.data.timer);
-      this.setData({ timer: null });
-    }
-  },
+  chooseAudioFile: function() {
+    wx.chooseMessageFile({
+      count: 1,
+      type: 'file',
+      extension: ['mp3', 'wav', 'm4a'],
+      success: (res) => {
+        const tempFilePath = res.tempFiles[0].path;
+        const size = res.tempFiles[0].size;
 
-  formatTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-  },
-
-  selectMode(e) {
-    const modeId = e.currentTarget.dataset.id;
-    this.setData({ selectedMode: modeId });
-  },
-
-  selectLanguage(e) {
-    const languageId = e.currentTarget.dataset.id;
-    this.setData({ selectedLanguage: languageId });
-  },
-
-  async transcribeAudio() {
-    if (!this.data.currentAudioUrl) {
-      wx.showToast({
-        title: '请先录制音频',
-        icon: 'none'
-      });
-      return;
-    }
-
-    this.setData({ isTranscribing: true });
-
-    try {
-      // 上传音频文件
-      const uploadRes = await wx.cloud.uploadFile({
-        cloudPath: `audio/${Date.now()}.mp3`,
-        filePath: this.data.currentAudioUrl
-      });
-
-      // 调用云函数进行转写
-      const { result } = await wx.cloud.callFunction({
-        name: 'transcribeAudio',
-        data: {
-          fileID: uploadRes.fileID,
-          language: this.data.selectedLanguage,
-          mode: this.data.selectedMode
+        // 检查文件大小，限制为10MB
+        if (size > 10 * 1024 * 1024) {
+          wx.showToast({
+            title: '文件大小超过10MB限制',
+            icon: 'none'
+          });
+          return;
         }
-      });
 
-      if (result.success) {
-        this.setData({
-          transcriptionResult: result.text,
-          isTranscribing: false
-        });
-
-        // 保存到历史记录
-        this.saveToHistory(result.text);
-      } else {
-        throw new Error(result.error);
+        // 开始转录
+        this.transcribeAudio(tempFilePath);
       }
-    } catch (error) {
-      console.error('转写失败:', error);
-      wx.showToast({
-        title: '转写失败，请重试',
-        icon: 'none'
-      });
-      this.setData({ isTranscribing: false });
-    }
+    });
   },
 
-  saveToHistory(text) {
-    const history = this.data.transcriptionHistory;
-    const newItem = {
-      id: Date.now(),
-      text,
-      language: this.data.languages.find(l => l.id === this.data.selectedLanguage).name,
-      timestamp: Date.now()
-    };
+  transcribeAudio: function(filePath) {
+    this.setData({
+      isTranscribing: true
+    });
 
-    history.unshift(newItem);
-    if (history.length > 10) {
-      history.pop();
-    }
+    // 模拟转录过程
+    setTimeout(() => {
+      // 实际应用中，这里应该调用语音识别API
+      const mockTranscriptText = "这是一段示例转录文本。在实际应用中，这里应该显示从语音识别API返回的真实转录结果。语音识别可以将语音内容转换为文字，方便用户进行记录和分享。";
 
-    this.setData({ transcriptionHistory: history });
-    this.saveHistoryToStorage(history);
-  },
-
-  saveHistoryToStorage(history) {
-    wx.setStorageSync('transcriptionHistory', history);
-  },
-
-  loadHistory() {
-    const history = wx.getStorageSync('transcriptionHistory') || [];
-    this.setData({ transcriptionHistory: history });
-  },
-
-  viewHistoryItem(e) {
-    const id = e.currentTarget.dataset.id;
-    const item = this.data.transcriptionHistory.find(h => h.id === id);
-    if (item) {
       this.setData({
-        selectedItem: item,
-        transcriptionResult: item.text,
-        selectedLanguage: this.data.languages.find(l => l.name === item.language).id
+        isTranscribing: false,
+        transcriptText: mockTranscriptText
       });
-    }
+    }, 3000);
   },
 
-  copyText() {
-    if (!this.data.transcriptionResult) return;
-
+  copyText: function() {
     wx.setClipboardData({
-      data: this.data.transcriptionResult,
+      data: this.data.transcriptText,
       success: () => {
         wx.showToast({
-          title: '已复制到剪贴板',
-          icon: 'success'
+          title: '已复制到剪贴板'
         });
       }
     });
   },
 
-  exportAsFile() {
-    if (!this.data.transcriptionResult) return;
-
-    const fs = wx.getFileSystemManager();
-    const filePath = `${wx.env.USER_DATA_PATH}/transcription_${Date.now()}.txt`;
-
-    fs.writeFile({
-      filePath,
-      data: this.data.transcriptionResult,
-      encoding: 'utf8',
-      success: () => {
-        wx.shareFileMessage({
-          filePath,
-          success: () => {
-            wx.showToast({
-              title: '导出成功',
-              icon: 'success'
-            });
-          }
-        });
+  clearResult: function() {
+    wx.showModal({
+      title: '确认清除',
+      content: '确定要清除当前转录结果吗？',
+      success: (res) => {
+        if (res.confirm) {
+          this.setData({
+            transcriptText: ''
+          });
+        }
       }
     });
   },
 
-  shareText() {
-    if (!this.data.transcriptionResult) return;
+  saveTranscript: function() {
+    // 生成唯一ID
+    const id = Date.now().toString();
+    const title = this.data.transcriptText.substring(0, 20) + (this.data.transcriptText.length > 20 ? '...' : '');
+    const date = new Date().getTime();
 
-    wx.showShareMenu({
-      withShareTicket: true,
-      menus: ['shareAppMessage', 'shareTimeline']
+    const newTranscript = {
+      id: id,
+      title: title,
+      content: this.data.transcriptText,
+      date: date,
+      language: this.data.language
+    };
+
+    // 获取现有历史记录
+    const historyStr = wx.getStorageSync('transcriptHistory') || '[]';
+    let history = [];
+
+    try {
+      history = JSON.parse(historyStr);
+    } catch (e) {
+      console.error('解析历史记录失败', e);
+    }
+
+    // 添加新记录到开头
+    history.unshift(newTranscript);
+
+    // 限制历史记录数量为20条
+    if (history.length > 20) {
+      history = history.slice(0, 20);
+    }
+
+    // 保存到本地存储
+    wx.setStorageSync('transcriptHistory', JSON.stringify(history));
+
+    // 更新页面数据
+    this.setData({
+      history: history
+    });
+
+    wx.showToast({
+      title: '保存成功'
     });
   },
 
-  goBack() {
-    wx.navigateBack();
+  newTranscription: function() {
+    this.setData({
+      transcriptText: '',
+      recordTime: '00:00'
+    });
   },
 
-  onShareAppMessage() {
-    return {
-      title: 'AI语音转文字',
-      path: '/pages/tools/voice-transcription/index',
-      imageUrl: '../../../assets/images/share-cover.png'
-    };
+  viewHistoryItem: function(e) {
+    const id = e.currentTarget.dataset.id;
+    const item = this.data.history.find(h => h.id === id);
+
+    if (item) {
+      this.setData({
+        transcriptText: item.content
+      });
+    }
   },
 
-  onShareTimeline() {
-    return {
-      title: 'AI语音转文字',
-      query: '',
-      imageUrl: '../../../assets/images/share-cover.png'
-    };
+  deleteHistoryItem: function(e) {
+    const id = e.currentTarget.dataset.id;
+
+    wx.showModal({
+      title: '确认删除',
+      content: '确定要删除这条记录吗？',
+      success: (res) => {
+        if (res.confirm) {
+          // 过滤掉要删除的记录
+          const newHistory = this.data.history.filter(item => item.id !== id);
+
+          // 更新本地存储
+          wx.setStorageSync('transcriptHistory', JSON.stringify(newHistory));
+
+          // 更新页面数据
+          this.setData({
+            history: newHistory
+          });
+
+          wx.showToast({
+            title: '删除成功'
+          });
+        }
+      }
+    });
+  },
+
+  clearHistory: function() {
+    wx.showModal({
+      title: '确认清空',
+      content: '确定要清空所有历史记录吗？',
+      success: (res) => {
+        if (res.confirm) {
+          // 清空本地存储
+          wx.setStorageSync('transcriptHistory', '[]');
+
+          // 更新页面数据
+          this.setData({
+            history: []
+          });
+
+          wx.showToast({
+            title: '已清空历史记录'
+          });
+        }
+      }
+    });
   }
 });

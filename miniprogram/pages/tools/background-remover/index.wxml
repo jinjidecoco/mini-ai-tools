@@ -2,197 +2,71 @@
 <view class="container">
   <!-- 顶部导航栏 -->
   <view class="tool-navbar">
-    <view class="nav-back" bindtap="goBack">
+    <view class="nav-back" bindtap="navigateBack">
       <image src="../../../assets/icons/arrow-left.svg" mode="aspectFit"></image>
     </view>
-    <text class="nav-title">去除背景</text>
-    <view class="nav-action" wx:if="{{!currentImage}}">
-      <view class="settings-btn" bindtap="toggleSettings">
-        <image src="../../../assets/icons/settings.svg" mode="aspectFit"></image>
-      </view>
-    </view>
-    <view class="nav-action" wx:else>
-      <view class="history-btn" bindtap="toggleHistory">
-        <image src="../../../assets/icons/history.svg" mode="aspectFit"></image>
-      </view>
-    </view>
+    <view class="nav-title">去除背景</view>
+    <view class="nav-placeholder"></view>
   </view>
 
   <!-- 主内容 -->
   <view class="tool-content">
-    <!-- 图片选择区域 -->
-    <view class="upload-section" wx:if="{{!currentImage}}">
+    <!-- 未选择图片状态 -->
+    <view class="upload-section" wx:if="{{!originalImage && !isLoading}}">
       <view class="upload-card" bindtap="chooseImage">
-        <image class="upload-icon" src="../../../assets/icons/upload-image.svg" mode="aspectFit"></image>
-        <text class="upload-text">点击选择图片</text>
-        <text class="upload-hint">支持PNG、JPG、JPEG格式</text>
-      </view>
-
-      <view class="tips-card" wx:if="{{showSettings}}">
-        <view class="tips-header">
-          <text class="tips-title">设置</text>
-          <view class="tips-close" bindtap="toggleSettings">
-            <image src="../../../assets/icons/close.svg" mode="aspectFit"></image>
-          </view>
-        </view>
-        <view class="tips-content settings">
-          <view class="setting-item">
-            <text class="setting-label">精度选择</text>
-            <view class="setting-options">
-              <view class="option-button {{precision === 'high' ? 'active' : ''}}" bindtap="selectPrecision" data-precision="high">
-                <text>高精度</text>
-              </view>
-              <view class="option-button {{precision === 'medium' ? 'active' : ''}}" bindtap="selectPrecision" data-precision="medium">
-                <text>中等</text>
-              </view>
-              <view class="option-button {{precision === 'low' ? 'active' : ''}}" bindtap="selectPrecision" data-precision="low">
-                <text>快速</text>
-              </view>
-            </view>
-          </view>
-
-          <view class="setting-item">
-            <text class="setting-label">输出格式</text>
-            <view class="setting-options">
-              <view class="option-button {{resultFormat === 'png' ? 'active' : ''}}" bindtap="selectFormat" data-format="png">
-                <text>PNG</text>
-              </view>
-              <view class="option-button {{resultFormat === 'jpg' ? 'active' : ''}}" bindtap="selectFormat" data-format="jpg">
-                <text>JPG</text>
-              </view>
-            </view>
-          </view>
-
-          <view class="setting-item">
-            <text class="setting-label">背景设置</text>
-            <view class="setting-toggle">
-              <text>透明背景</text>
-              <switch checked="{{transparentBg}}" bindchange="toggleTransparent" color="#3B82F6"></switch>
-            </view>
-            <view class="color-picker" wx:if="{{!transparentBg}}">
-              <text>背景颜色：</text>
-              <view class="color-preview" style="background-color: {{customBgColor}};"></view>
-              <input type="color" value="{{customBgColor}}" bindchange="onBgColorChange"></input>
-            </view>
-          </view>
-        </view>
-      </view>
-
-      <!-- 历史记录 -->
-      <view class="history-section" wx:if="{{processedImages.length > 0 && !showSettings}}">
-        <view class="section-header">
-          <text class="section-title">最近处理</text>
-        </view>
-        <scroll-view scroll-x class="history-scroll" enhanced show-scrollbar="{{false}}">
-          <view class="history-items">
-            <view wx:for="{{processedImages}}" wx:key="id" class="history-item" bindtap="viewHistoryImage" data-id="{{item.id}}">
-              <image src="{{item.processedPath}}" mode="aspectFill"></image>
-              <view class="history-item-info">
-                <text class="history-date">{{item.timestamp}}</text>
-              </view>
-            </view>
-          </view>
-        </scroll-view>
+        <image class="upload-icon" src="../../../assets/icons/upload.svg" mode="aspectFit"></image>
+        <text class="upload-text">点击上传图片</text>
+        <text class="upload-tip">支持 JPG、PNG 格式</text>
       </view>
     </view>
 
-    <!-- 历史记录详情页 -->
-    <view class="history-section full" wx:if="{{showHistory && processedImages.length > 0}}">
-      <view class="section-header with-close">
-        <text class="section-title">历史记录</text>
-        <view class="section-close" bindtap="toggleHistory">
-          <image src="../../../assets/icons/close.svg" mode="aspectFit"></image>
-        </view>
-      </view>
-      <view class="history-grid">
-        <view wx:for="{{processedImages}}" wx:key="id" class="history-grid-item">
-          <view class="history-image-container">
-            <image src="{{item.processedPath}}" mode="aspectFill"></image>
-            <view class="history-actions">
-              <view class="history-action" catchtap="viewHistoryImage" data-id="{{item.id}}">
-                <image src="../../../assets/icons/eye.svg" mode="aspectFit"></image>
-              </view>
-              <view class="history-action delete" catchtap="deleteHistoryImage" data-id="{{item.id}}">
-                <image src="../../../assets/icons/delete.svg" mode="aspectFit"></image>
-              </view>
-            </view>
-          </view>
-          <!-- <text class="history-date">{{(new Date(item.timestamp)).toLocaleDateString()}}</text> -->
-        </view>
-      </view>
+    <!-- 加载中状态 -->
+    <view class="loading-area" wx:if="{{isLoading}}">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">正在处理图片，请稍候...</text>
     </view>
 
-    <!-- 图片处理区域 -->
-    <view class="process-section" wx:if="{{currentImage && !showHistory}}">
-      <!-- 处理中状态 -->
-      <view class="processing-status" wx:if="{{isProcessing}}">
-        <view class="progress-container">
-          <progress percent="{{processingProgress}}" stroke-width="4" activeColor="#3B82F6" backgroundColor="#E5E7EB"></progress>
-          <text class="progress-text">{{processingProgress}}%</text>
-        </view>
-        <view class="processing-steps">
-          <view class="processing-step {{processingProgress >= 30 ? 'completed' : 'current'}}">
-            <view class="step-indicator"></view>
-            <text>图像分析</text>
-          </view>
-          <view class="processing-step {{processingProgress >= 30 && processingProgress < 70 ? 'current' : (processingProgress >= 70 ? 'completed' : '')}}">
-            <view class="step-indicator"></view>
-            <text>背景识别</text>
-          </view>
-          <view class="processing-step {{processingProgress >= 70 && processingProgress < 100 ? 'current' : (processingProgress >= 100 ? 'completed' : '')}}">
-            <view class="step-indicator"></view>
-            <text>图像生成</text>
-          </view>
-        </view>
+    <!-- 已选择图片但未处理状态 -->
+    <view class="image-preview" wx:if="{{originalImage && !showResult && !isLoading}}">
+      <view class="preview-header">
+        <text class="preview-title">原始图片</text>
       </view>
-
-      <view class="image-preview-container">
-        <view class="image-preview">
-          <image src="{{currentImage.path}}" mode="aspectFit"></image>
-          <view class="image-info">
-            <text>原始图片 · {{currentImage.size}}</text>
-          </view>
-        </view>
-
-        <!-- 处理后图片 -->
-        <view class="image-preview" wx:if="{{processedImage && !isProcessing}}">
-          <image src="{{processedImage.processedPath}}" mode="aspectFit"></image>
-          <view class="image-info">
-            <text>处理后图片</text>
-          </view>
-        </view>
-      </view>
-
-      <!-- 按钮区域 -->
+      <image class="preview-image" src="{{originalImage}}" mode="aspectFit"></image>
       <view class="action-buttons">
-        <block wx:if="{{!processedImage}}">
-          <view class="action-button secondary" bindtap="clearImage">
-            <text>清除</text>
-          </view>
-          <view class="action-button primary {{isProcessing ? 'disabled' : ''}}" bindtap="{{isProcessing ? '' : 'processImage'}}">
-            <text>{{isProcessing ? '处理中...' : '去除背景'}}</text>
-          </view>
-        </block>
-
-        <block wx:else>
-          <view class="action-button secondary" bindtap="clearImage">
-            <text>重新选择</text>
-          </view>
-          <view class="action-button secondary" bindtap="saveImage">
-            <image src="../../../assets/icons/download.svg" mode="aspectFit"></image>
-            <text>保存</text>
-          </view>
-          <view class="action-button primary" bindtap="shareImage">
-            <image src="../../../assets/icons/share.svg" mode="aspectFit"></image>
-            <text>分享</text>
-          </view>
-        </block>
+        <button class="action-button reset" bindtap="resetImage">重新选择</button>
+        <button class="action-button process" bindtap="processImage">去除背景</button>
       </view>
     </view>
 
-    <!-- 错误信息 -->
-    <view class="error-message" wx:if="{{errorMessage}}">
-      <text>{{errorMessage}}</text>
+    <!-- 处理结果状态 -->
+    <view class="result-area" wx:if="{{showResult}}">
+      <view class="result-header">
+        <text class="result-title">处理结果</text>
+      </view>
+      <view class="image-comparison">
+        <view class="comparison-item">
+          <text class="comparison-label">原图</text>
+          <image class="comparison-image" src="{{originalImage}}" mode="aspectFit"></image>
+        </view>
+        <view class="comparison-item">
+          <text class="comparison-label">去背景</text>
+          <image class="comparison-image" src="{{processedImage}}" mode="aspectFit"></image>
+        </view>
+      </view>
+      <view class="result-actions">
+        <button class="result-button reset" bindtap="resetImage">重新选择</button>
+        <button class="result-button save" bindtap="saveToAlbum">保存到相册</button>
+      </view>
     </view>
+
+    <!-- API 使用情况 -->
+    <view class="api-usage" wx:if="{{isLoggedIn}}">
+      <text class="usage-text">剩余积分: {{remainingCredits}}</text>
+    </view>
+  </view>
+
+  <!-- 错误提示 -->
+  <view class="error-toast {{showError ? 'show' : ''}}" wx:if="{{showError}}">
+    <text class="error-message">{{errorMessage}}</text>
   </view>
 </view>

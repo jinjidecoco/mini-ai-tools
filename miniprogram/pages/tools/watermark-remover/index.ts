@@ -32,22 +32,52 @@ type WatermarkType = 'auto' | 'text' | 'image' | 'complex';
 type ProcessingStrength = 'low' | 'medium' | 'high';
 type QualityPreservation = 'normal' | 'high';
 
-Page({
+interface PageData {
+  isLoading: boolean;
+  originalImage: string;
+  processedImage: string;
+  showResult: boolean;
+  errorMessage: string;
+  showError: boolean;
+  isLoggedIn: boolean;
+  remainingCredits: number;
+  watermarkType: string;
+  quality: string;
+  showTips: boolean;
+  progressPercent: number;
+}
+
+Page<PageData>({
   data: {
-    imageUrl: '',                      // 原始图片URL
-    resultImageUrl: '',                // 处理后图片URL
-    isProcessing: false,               // 是否处理中
-    showSettings: false,               // 是否显示设置面板
-    watermarkType: 'auto' as WatermarkType,         // 水印类型
-    processingStrength: 'medium' as ProcessingStrength,   // 处理强度
-    qualityPreservation: 'normal' as QualityPreservation, // 图片质量保留
-    showTips: true,                    // 是否显示提示
-    history: [] as HistoryItem[]       // 历史记录
+    isLoading: false,
+    originalImage: '',
+    processedImage: '',
+    showResult: false,
+    errorMessage: '',
+    showError: false,
+    isLoggedIn: false,
+    remainingCredits: 10,
+    watermarkType: 'auto',
+    quality: 'high',
+    showTips: true,
+    progressPercent: 0
   },
 
   onLoad() {
-    // 加载历史记录
-    this.loadHistory();
+    // 检查登录状态
+    const app = getApp<IAppOption>();
+    const isLoggedIn = app.checkAndNavigateToLogin('/pages/tools/watermark-remover/index');
+
+    if (isLoggedIn) {
+      this.setData({ isLoggedIn: true });
+      this.loadApiUsage();
+    }
+
+    // 检查是否需要显示使用技巧
+    const tipsShown = wx.getStorageSync('watermarkTipsShown');
+    if (tipsShown) {
+      this.setData({ showTips: false });
+    }
   },
 
   // 加载历史记录
@@ -63,220 +93,173 @@ Page({
     wx.navigateBack();
   },
 
-  // 切换设置面板
-  toggleSettings() {
-    this.setData({
-      showSettings: !this.data.showSettings
-    });
-  },
-
-  // 隐藏提示
+  // 隐藏使用技巧
   hideTips() {
-    this.setData({
-      showTips: false
-    });
+    this.setData({ showTips: false });
+    wx.setStorageSync('watermarkTipsShown', true);
   },
 
   // 选择图片
   chooseImage() {
-    wx.chooseMedia({
+    wx.chooseImage({
       count: 1,
-      mediaType: ['image'],
+      sizeType: ['compressed'],
       sourceType: ['album', 'camera'],
       success: (res) => {
-        const tempFilePath = res.tempFiles[0].tempFilePath;
+        const tempFilePath = res.tempFilePaths[0];
 
-        // 检查文件大小
-        const fileSize = res.tempFiles[0].size;
-        if (fileSize > 10 * 1024 * 1024) { // 10MB限制
-          wx.showToast({
-            title: '图片大小不能超过10MB',
-            icon: 'none'
-          });
-          return;
-        }
-
+        // 显示原始图片
         this.setData({
-          imageUrl: tempFilePath,
-          resultImageUrl: ''
+          originalImage: tempFilePath,
+          processedImage: '',
+          showResult: false
+        });
+
+        // 检查图片大小
+        wx.getFileInfo({
+          filePath: tempFilePath,
+          success: (fileInfo) => {
+            const sizeInMB = fileInfo.size / (1024 * 1024);
+            if (sizeInMB > 5) {
+              this.showError('图片大小超过5MB，可能会影响处理速度');
+            }
+          }
         });
       }
     });
   },
 
   // 设置水印类型
-  setWatermarkType(e: WechatMiniprogram.TouchEvent) {
+  setWatermarkType(e) {
     this.setData({
-      watermarkType: e.currentTarget.dataset.type as WatermarkType
-    });
-  },
-
-  // 设置处理强度
-  setProcessingStrength(e: WechatMiniprogram.TouchEvent) {
-    this.setData({
-      processingStrength: e.currentTarget.dataset.strength as ProcessingStrength
-    });
-  },
-
-  // 设置质量保留
-  setQualityPreservation(e: WechatMiniprogram.TouchEvent) {
-    this.setData({
-      qualityPreservation: e.currentTarget.dataset.quality as QualityPreservation
+      watermarkType: e.currentTarget.dataset.type
     });
   },
 
   // 处理图片
   processImage() {
-    if (!this.data.imageUrl) {
-      wx.showToast({
-        title: '请先选择图片',
-        icon: 'none'
-      });
+    if (!this.data.originalImage) {
+      this.showError('请先选择一张图片');
       return;
     }
 
-    // 设置处理中状态
-    this.setData({
-      isProcessing: true,
-      showSettings: false
-    });
+    // 设置加载状态
+    this.setData({ isLoading: true });
 
-    // 模拟API调用延迟
+    // 添加振动反馈
+    wx.vibrateShort({ type: 'medium' });
+
+    // 模拟进度
+    this.simulateProgress();
+
+    // 模拟API调用
     setTimeout(() => {
-      this.removeWatermark();
-    }, 2000);
+      // 实际应用中，这里应调用百度AI的inpainting API
+
+      // 模拟处理结果 - 实际项目中应替换为真实API调用
+      this.handleProcessResult();
+    }, 3000);
   },
 
-  // 去除水印（模拟实现）
-  removeWatermark() {
-    // 实际应用中，这里应该调用后端API或云函数进行处理
-    // 这里仅作模拟
+  // 模拟进度
+  simulateProgress() {
+    let progress = 0;
+    const timer = setInterval(() => {
+      progress += Math.random() * 5;
+      if (progress >= 100) {
+        clearInterval(timer);
+        progress = 100;
+      }
+      this.setData({
+        progressPercent: Math.min(Math.floor(progress), 95)
+      });
+    }, 200);
+  },
 
-    // 模拟处理完成后的结果
-    // 实际中应该接收服务器返回的新图片URL
-    const resultImageUrl = this.data.imageUrl;
+  // 处理结果（模拟）
+  handleProcessResult() {
+    // 实际项目中，这里应处理API返回结果
 
-    // 更新状态
+    // 为了演示，我们简单复制原图作为结果
+    const tempFilePath = this.data.originalImage;
+
     this.setData({
-      resultImageUrl,
-      isProcessing: false
+      processedImage: tempFilePath,
+      showResult: true,
+      isLoading: false
     });
 
-    // 添加到历史记录
-    this.addToHistory(this.data.imageUrl, resultImageUrl);
+    // 添加振动反馈
+    wx.vibrateShort({ type: 'light' });
   },
 
-  // 添加到历史记录
-  addToHistory(originalUrl: string, resultUrl: string) {
-    const historyItem: HistoryItem = {
-      id: Date.now().toString(),
-      originalUrl,
-      resultUrl,
-      date: Date.now(),
-      watermarkType: this.data.watermarkType
-    };
+  // 显示错误信息
+  showError(message) {
+    // 添加振动反馈
+    wx.vibrateShort({ type: 'heavy' });
 
-    const history = [historyItem, ...this.data.history];
-
-    // 限制历史记录数量，最多保存20条
-    if (history.length > 20) {
-      history.pop();
-    }
-
-    // 更新数据
     this.setData({
-      history
+      errorMessage: message,
+      showError: true
     });
 
-    // 保存到本地存储
-    wx.setStorageSync('watermarkRemovalHistory', history);
+    setTimeout(() => {
+      this.setData({ showError: false });
+    }, 3000);
   },
 
-  // 重置图片
-  resetImage() {
-    this.setData({
-      imageUrl: '',
-      resultImageUrl: '',
-      showSettings: false
-    });
-  },
-
-  // 保存图片
-  saveImage() {
-    if (!this.data.resultImageUrl) {
+  // 保存到相册
+  saveToAlbum() {
+    if (!this.data.processedImage) {
+      this.showError('没有可保存的图片');
       return;
     }
 
     wx.saveImageToPhotosAlbum({
-      filePath: this.data.resultImageUrl,
+      filePath: this.data.processedImage,
       success: () => {
+        // 添加振动反馈
+        wx.vibrateShort({ type: 'light' });
+
         wx.showToast({
           title: '已保存到相册',
           icon: 'success'
         });
       },
       fail: (err) => {
-        // 如果用户拒绝授权，显示提示引导用户打开授权
-        if (err.errMsg.indexOf('auth deny') !== -1) {
-          wx.showModal({
-            title: '提示',
-            content: '需要您授权保存图片到相册',
-            success: (res) => {
-              if (res.confirm) {
-                wx.openSetting({
-                  success: (settingRes) => {
-                    if (settingRes.authSetting['scope.writePhotosAlbum']) {
-                      wx.showToast({
-                        title: '授权成功，请重新保存',
-                        icon: 'none'
-                      });
-                    } else {
-                      wx.showToast({
-                        title: '授权失败，无法保存图片',
-                        icon: 'none'
-                      });
-                    }
-                  }
-                });
-              }
-            }
-          });
-        } else {
-          wx.showToast({
-            title: '保存失败',
-            icon: 'none'
-          });
-        }
+        console.error('保存到相册失败', err);
+        this.showError('保存到相册失败，请检查权限设置');
       }
     });
   },
 
-  // 查看历史记录项
-  viewHistoryItem(e: WechatMiniprogram.TouchEvent) {
-    const { id } = e.currentTarget.dataset;
-    const item = this.data.history.find(item => item.id === id);
+  // 重置图片
+  resetImage() {
+    this.setData({
+      originalImage: '',
+      processedImage: '',
+      showResult: false
+    });
+    this.chooseImage();
+  },
 
-    if (item) {
-      this.setData({
-        imageUrl: item.originalUrl,
-        resultImageUrl: item.resultUrl
-      });
+  // 加载API使用情况
+  loadApiUsage() {
+    const credits = wx.getStorageSync('watermarkRemoverCredits');
+    if (credits !== undefined && credits !== null) {
+      this.setData({ remainingCredits: credits });
+    } else {
+      // 初始积分
+      wx.setStorageSync('watermarkRemoverCredits', this.data.remainingCredits);
     }
   },
 
-  // 分享图片
-  shareImage() {
-    wx.showShareMenu({
-      withShareTicket: true,
-      menus: ['shareAppMessage', 'shareTimeline']
-    });
-  },
-
-  // 分享到朋友圈
+  // 分享功能
   onShareAppMessage() {
     return {
-      title: '我用AI去水印工具处理了图片，效果超赞！',
-      path: '/pages/tools/watermark-remover/index'
+      title: '一键去除图片水印，效果超赞！',
+      path: '/pages/tools/watermark-remover/index',
+      imageUrl: this.data.processedImage || '../../../assets/images/share-cover.png'
     };
   }
 });

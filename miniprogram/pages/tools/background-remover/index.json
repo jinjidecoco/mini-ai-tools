@@ -1,5 +1,6 @@
 {
   "navigationBarTitleText": "去除背景",
   "usingComponents": {},
-  "navigationStyle": "custom"
+  "navigationStyle": "custom",
+  "disableScroll": false
 }

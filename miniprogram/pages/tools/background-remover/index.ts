@@ -17,261 +17,274 @@ interface ProcessedImage {
   background?: string; // 可选的背景颜色或类型
 }
 
-Page({
+interface PageData {
+  isLoading: boolean;
+  originalImage: string;
+  processedImage: string;
+  showResult: boolean;
+  errorMessage: string;
+  showError: boolean;
+  isLoggedIn: boolean;
+  apiKey: 'string';
+  remainingCredits: number;
+  animateIn: boolean;
+}
+
+Page<PageData>({
   data: {
-    isProcessing: false,
-    currentImage: null as ImageInfo | null,
-    processedImage: null as ProcessedImage | null,
-    processedImages: [] as ProcessedImage[],
+    isLoading: false,
+    originalImage: '',
+    processedImage: '',
+    showResult: false,
     errorMessage: '',
-    precision: 'high', // high, medium, low
-    resultFormat: 'png', // png, jpg
-    transparentBg: true,
-    customBgColor: '#ffffff',
-    showSettings: true,
-    processingProgress: 0,
-    imageAnalysisComplete: false,
-    showHistory: false
+    showError: false,
+    isLoggedIn: false,
+    apiKey: 'tJWAwfKm5bLVGdzvwecWiKi7', // API 密钥
+    remainingCredits: 0,
+    animateIn: false
   },
 
   onLoad() {
-    // 加载历史记录
-    const history = wx.getStorageSync('backgroundRemoverHistory') || [];
-    this.setData({
-      processedImages: history
-    });
+    // 检查登录状态
+    const app = getApp<IAppOption>();
+    const isLoggedIn = app.checkAndNavigateToLogin('/pages/tools/background-remover/index');
+
+    if (isLoggedIn) {
+      this.setData({ isLoggedIn: true });
+      // 加载用户的 API 使用情况
+      this.loadApiUsage();
+    }
+
+    // 添加动画效果
+    setTimeout(() => {
+      this.setData({ animateIn: true });
+    }, 100);
   },
 
-  goBack() {
+  navigateBack() {
     wx.navigateBack();
   },
 
   chooseImage() {
-    wx.chooseMedia({
+    wx.chooseImage({
       count: 1,
-      mediaType: ['image'],
+      sizeType: ['compressed'],
       sourceType: ['album', 'camera'],
       success: (res) => {
-        const tempFile = res.tempFiles[0];
-        const sizeKB = (tempFile.size / 1024).toFixed(2);
-        const sizeText = `${sizeKB} KB`;
+        const tempFilePath = res.tempFilePaths[0];
 
+        // 显示原始图片
         this.setData({
-          currentImage: {
-            id: Date.now(),
-            path: tempFile.tempFilePath,
-            size: sizeText,
-            timestamp: Date.now()
-          },
-          errorMessage: '',
-          processedImage: null,
-          processingProgress: 0,
-          imageAnalysisComplete: false
+          originalImage: tempFilePath,
+          processedImage: '',
+          showResult: false
+        });
+
+        // 检查图片大小
+        wx.getFileInfo({
+          filePath: tempFilePath,
+          success: (fileInfo) => {
+            const sizeInMB = fileInfo.size / (1024 * 1024);
+            if (sizeInMB > 5) {
+              this.showError('图片大小超过5MB，可能会影响处理速度');
+            }
+          }
         });
       },
       fail: (err) => {
         console.error('选择图片失败', err);
-        this.setData({
-          errorMessage: '选择图片失败，请重试'
-        });
       }
-    });
-  },
-
-  selectPrecision(e: any) {
-    const precision = e.currentTarget.dataset.precision;
-    this.setData({
-      precision
-    });
-  },
-
-  selectFormat(e: any) {
-    const format = e.currentTarget.dataset.format;
-    this.setData({
-      resultFormat: format
-    });
-  },
-
-  toggleTransparent(e: any) {
-    this.setData({
-      transparentBg: e.detail.value
-    });
-  },
-
-  onBgColorChange(e: any) {
-    this.setData({
-      customBgColor: e.detail.value
-    });
-  },
-
-  toggleSettings() {
-    this.setData({
-      showSettings: !this.data.showSettings
-    });
-  },
-
-  toggleHistory() {
-    this.setData({
-      showHistory: !this.data.showHistory
     });
   },
 
   processImage() {
-    if (!this.data.currentImage) return;
-
-    this.setData({
-      isProcessing: true,
-      processingProgress: 0,
-      imageAnalysisComplete: false,
-      errorMessage: ''
-    });
-
-    // 模拟处理进度
-    this.simulateProcessingProgress();
-  },
-
-  // 模拟处理进度
-  simulateProcessingProgress() {
-    let progress = 0;
-    const progressInterval = setInterval(() => {
-      progress += 5;
-      this.setData({
-        processingProgress: progress
-      });
-
-      if (progress === 50) {
-        this.setData({
-          imageAnalysisComplete: true
-        });
-      }
-
-      if (progress >= 100) {
-        clearInterval(progressInterval);
-
-        // 模拟API调用延时
-        setTimeout(() => {
-          this.completeImageProcessing();
-        }, 500);
-      }
-    }, 100);
-  },
-
-  // 完成图像处理
-  completeImageProcessing() {
-    const currentImage = this.data.currentImage;
-    if (!currentImage) return;
-
-    // 这里在实际应用中会得到API返回的处理后图片
-    // 这里为了演示，我们使用原图作为处理后的图像
-    const processedImage: ProcessedImage = {
-      id: Date.now(),
-      originalPath: currentImage.path,
-      processedPath: currentImage.path, // 实际情况应该是处理后的图像路径
-      timestamp: Date.now(),
-      background: this.data.transparentBg ? 'transparent' : this.data.customBgColor
-    };
-
-    const processedImages = [processedImage, ...this.data.processedImages];
-    if (processedImages.length > 20) {
-      processedImages.pop();
+    if (!this.data.originalImage) {
+      this.showError('请先选择一张图片');
+      return;
     }
 
-    this.setData({
-      processedImage,
-      processedImages,
-      isProcessing: false
-    });
+    this.setData({ isLoading: true });
 
-    // 保存到本地存储
-    wx.setStorageSync('backgroundRemoverHistory', processedImages);
-
-    wx.showToast({
-      title: '处理完成',
-      icon: 'success'
+    // 将图片转换为 base64
+    wx.getFileSystemManager().readFile({
+      filePath: this.data.originalImage,
+      encoding: 'base64',
+      success: (res) => {
+        // 调用 remove.bg API
+        this.callRemoveBgApi(res.data as string);
+      },
+      fail: (err) => {
+        console.error('读取图片失败', err);
+        this.showError('读取图片失败');
+        this.setData({ isLoading: false });
+      }
     });
   },
 
-  viewHistoryImage(e: any) {
-    const id = e.currentTarget.dataset.id;
-    const image = this.data.processedImages.find(item => item.id === id);
+  callRemoveBgApi(base64Image: string) {
+    // 添加振动反馈
+    wx.vibrateShort({ type: 'medium' });
 
-    if (image) {
-      this.setData({
-        showHistory: false,
-        processedImage: image,
-        currentImage: {
-          id: image.id,
-          path: image.originalPath,
-          size: '', // 这里无法获取到原始大小，可以根据实际情况调整
-          timestamp: image.timestamp
+    wx.request({
+      url: 'https://api.remove.bg/v1.0/removebg',
+      method: 'POST',
+      header: {
+        'X-Api-Key': this.data.apiKey,
+        'Content-Type': 'application/json'
+      },
+      data: {
+        image_file_b64: base64Image,
+        size: 'auto',
+        type: 'auto',
+        format: 'png',
+        bg_color: null
+      },
+      responseType: 'arraybuffer',
+      success: (res) => {
+        if (res.statusCode === 200) {
+          // 将返回的图片数据转换为临时文件
+          this.saveProcessedImage(res.data);
+
+          // 更新剩余积分
+          const credits = res.header['X-Credits-Remaining'];
+          if (credits) {
+            this.setData({ remainingCredits: parseInt(credits) });
+            wx.setStorageSync('removeBgCredits', parseInt(credits));
+          }
+        } else {
+          // 处理错误
+          this.handleApiError(res);
         }
-      });
-    }
+      },
+      fail: (err) => {
+        console.error('API 请求失败', err);
+        this.showError('网络请求失败，请检查网络连接');
+        this.setData({ isLoading: false });
+      }
+    });
   },
 
-  deleteHistoryImage(e: any) {
-    const id = e.currentTarget.dataset.id;
-    const processedImages = this.data.processedImages.filter(item => item.id !== id);
+  saveProcessedImage(arrayBuffer: ArrayBuffer) {
+    const fs = wx.getFileSystemManager();
+    const tempFilePath = `${wx.env.USER_DATA_PATH}/bg_removed_${Date.now()}.png`;
+
+    fs.writeFile({
+      filePath: tempFilePath,
+      data: arrayBuffer,
+      encoding: 'binary',
+      success: () => {
+        // 添加振动反馈
+        wx.vibrateShort({ type: 'light' });
+
+        this.setData({
+          processedImage: tempFilePath,
+          showResult: true,
+          isLoading: false
+        });
+
+        // 保存到历史记录
+        this.saveToHistory(tempFilePath);
+      },
+      fail: (err) => {
+        console.error('保存图片失败', err);
+        this.showError('保存图片失败');
+        this.setData({ isLoading: false });
+      }
+    });
+  },
+
+  handleApiError(res: any) {
+    let errorMessage = '处理图片失败';
+
+    try {
+      // 尝试解析错误消息
+      const errorData = JSON.parse(new TextDecoder().decode(res.data));
+      errorMessage = errorData.errors[0].title || errorMessage;
+    } catch (e) {
+      console.error('解析错误信息失败', e);
+    }
+
+    this.showError(errorMessage);
+    this.setData({ isLoading: false });
+  },
+
+  showError(message: string) {
+    // 添加振动反馈
+    wx.vibrateShort({ type: 'heavy' });
 
     this.setData({
-      processedImages
+      errorMessage: message,
+      showError: true
     });
 
-    wx.setStorageSync('backgroundRemoverHistory', processedImages);
-
-    wx.showToast({
-      title: '已删除',
-      icon: 'success'
-    });
+    setTimeout(() => {
+      this.setData({ showError: false });
+    }, 3000);
   },
 
-  saveImage() {
-    if (!this.data.processedImage) return;
-
-    const filePath = this.data.processedImage.processedPath;
+  saveToAlbum() {
+    if (!this.data.processedImage) {
+      this.showError('没有可保存的图片');
+      return;
+    }
 
     wx.saveImageToPhotosAlbum({
-      filePath,
+      filePath: this.data.processedImage,
       success: () => {
+        // 添加振动反馈
+        wx.vibrateShort({ type: 'light' });
+
         wx.showToast({
           title: '已保存到相册',
           icon: 'success'
         });
       },
       fail: (err) => {
-        console.error('保存图片失败', err);
-        wx.showToast({
-          title: '保存失败，请重试',
-          icon: 'none'
-        });
+        console.error('保存到相册失败', err);
+        this.showError('保存到相册失败，请检查权限设置');
       }
     });
   },
 
-  shareImage() {
-    if (!this.data.processedImage) return;
-
-    wx.showShareMenu({
-      withShareTicket: true,
-      menus: ['shareAppMessage', 'shareTimeline']
+  saveToHistory(imagePath: string) {
+    // 这里可以实现保存到历史记录的逻辑
+    // 例如，将图片路径和时间戳保存到本地存储
+    const history = wx.getStorageSync('bgRemovalHistory') || [];
+    history.unshift({
+      id: Date.now(),
+      imagePath: imagePath,
+      timestamp: Date.now()
     });
+
+    // 只保留最近的 20 条记录
+    const limitedHistory = history.slice(0, 20);
+    wx.setStorageSync('bgRemovalHistory', limitedHistory);
   },
 
-  clearImage() {
+  loadApiUsage() {
+    // 这里可以实现加载用户 API 使用情况的逻辑
+    // 例如，从服务器获取用户的 API 使用情况
+    // 或者从本地存储中获取
+    const credits = wx.getStorageSync('removeBgCredits');
+    if (credits) {
+      this.setData({ remainingCredits: credits });
+    }
+  },
+
+  resetImage() {
     this.setData({
-      currentImage: null,
-      processedImage: null,
-      errorMessage: '',
-      processingProgress: 0,
-      imageAnalysisComplete: false
+      originalImage: '',
+      processedImage: '',
+      showResult: false
     });
+    this.chooseImage();
   },
 
   onShareAppMessage() {
     return {
-      title: '我使用AI工具轻松去除了图片背景',
+      title: '一键去除图片背景，效果超赞！',
       path: '/pages/tools/background-remover/index',
-      imageUrl: this.data.processedImage ? this.data.processedImage.processedPath : ''
+      imageUrl: this.data.processedImage || '../../../assets/images/share-cover.png'
     };
   }
 });

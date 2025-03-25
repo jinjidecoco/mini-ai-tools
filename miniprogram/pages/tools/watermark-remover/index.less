@@ -77,396 +77,393 @@
 
 .tool-content {
   flex: 1;
-  padding: @spacing-lg;
+  padding: 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* 上传区域 */
 .upload-section {
-  margin-bottom: @spacing-lg;
+  width: 100%;
+  max-width: 600rpx;
+  margin: 0 auto;
 }
 
 .upload-card {
-  border: 2rpx dashed @border-color;
-  border-radius: @radius-md;
-  padding: @spacing-xl;
+  background-color: @bg-container;
+  border-radius: @radius-lg;
+  padding: 60rpx 40rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: @bg-container;
-  transition: @transition-normal;
-  margin-bottom: @spacing-lg;
+  box-shadow: @shadow-md;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 30rpx;
 
   &:active {
-    border-color: @primary-color;
-    background-color: @bg-highlight;
+    transform: scale(0.98);
+    box-shadow: @shadow-sm;
   }
+}
 
-  .upload-icon {
-    width: 100rpx;
-    height: 100rpx;
-    margin-bottom: @spacing-md;
-  }
+.upload-icon {
+  width: 120rpx;
+  height: 120rpx;
+  margin-bottom: 40rpx;
+  opacity: 0.8;
+}
 
-  .upload-text {
-    font-size: 32rpx;
-    font-weight: 500;
-    color: @text-color;
-    margin-bottom: @spacing-xs;
-  }
+.upload-text {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: @text-color;
+  margin-bottom: 16rpx;
+}
 
-  .upload-hint {
-    font-size: 24rpx;
-    color: @text-secondary;
-    margin-top: @spacing-xs;
-  }
+.upload-tip {
+  font-size: 28rpx;
+  color: @text-secondary;
 }
 
 /* 使用提示 */
 .tips-card {
   background-color: @bg-container;
-  border-radius: @radius-md;
-  overflow: hidden;
-  box-shadow: @shadow-sm;
-  margin-bottom: @spacing-lg;
+  border-radius: @radius-lg;
+  padding: 30rpx;
+  margin-top: 30rpx;
+  box-shadow: @shadow-md;
+}
 
-  .tips-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: @spacing-sm @spacing-md;
-    background-color: @bg-secondary;
-    border-bottom: 2rpx solid @border-color;
+.tips-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
 
-    .tips-title {
-      font-size: 28rpx;
-      font-weight: 500;
-      color: @text-color;
-    }
+.tips-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: @text-color;
+}
 
-    .tips-close {
-      width: 40rpx;
-      height: 40rpx;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: @transition-fast;
+.close-btn {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: @radius-full;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  color: @text-secondary;
+  background-color: @bg-secondary;
+  transition: @transition-fast;
 
-      &:active {
-        transform: scale(0.9);
-      }
-
-      image {
-        width: 24rpx;
-        height: 24rpx;
-      }
-    }
-  }
-
-  .tips-content {
-    padding: @spacing-md;
-
-    .tip-item {
-      display: flex;
-      align-items: flex-start;
-      margin-bottom: @spacing-sm;
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-
-      .tip-icon {
-        width: 36rpx;
-        height: 36rpx;
-        border-radius: @radius-full;
-        background-color: @primary-color;
-        color: @text-inverse;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 24rpx;
-        margin-right: @spacing-sm;
-        flex-shrink: 0;
-      }
-
-      .tip-text {
-        flex: 1;
-        font-size: 26rpx;
-        color: @text-secondary;
-        line-height: 1.5;
-      }
-    }
+  &:active {
+    opacity: 0.7;
   }
 }
 
-/* 设置面板 */
-.settings-panel {
-  background-color: @bg-container;
-  border-radius: @radius-md;
-  box-shadow: @shadow-sm;
-  overflow: hidden;
-  margin-bottom: @spacing-lg;
-
-  .panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: @spacing-sm @spacing-md;
-    background-color: @bg-secondary;
-    border-bottom: 2rpx solid @border-color;
-
-    .panel-title {
-      font-size: 28rpx;
-      font-weight: 500;
-      color: @text-color;
-    }
-
-    .panel-close {
-      width: 40rpx;
-      height: 40rpx;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      image {
-        width: 24rpx;
-        height: 24rpx;
-      }
-    }
-  }
-
-  .setting-item {
-    padding: @spacing-md;
-    border-bottom: 2rpx solid @border-light;
-
-    &:last-child {
-      border-bottom: none;
-    }
-
-    .setting-label {
-      font-size: 28rpx;
-      font-weight: 500;
-      color: @text-color;
-      margin-bottom: @spacing-sm;
-    }
-
-    .setting-options {
-      display: flex;
-      flex-wrap: wrap;
-      gap: @spacing-md;
-
-      .option-button {
-        padding: @spacing-sm @spacing-md;
-        background-color: @bg-secondary;
-        border: 2rpx solid @border-color;
-        border-radius: @radius-sm;
-        font-size: 26rpx;
-        color: @text-color;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: @transition-fast;
-
-        &:active {
-          transform: scale(0.97);
-        }
-
-        &.active {
-          background-color: @primary-color;
-          color: @text-inverse;
-          border-color: @primary-color;
-        }
-      }
-    }
-  }
-}
-
-/* 处理中状态 */
-.processing-section {
+.tips-list {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: @spacing-xl 0;
+  gap: 16rpx;
+}
 
-  .loading-spinner {
-    margin-bottom: @spacing-lg;
-  }
-
-  .process-text {
-    font-size: 30rpx;
-    font-weight: 500;
-    color: @text-color;
-    margin-bottom: @spacing-sm;
-  }
-
-  .process-hint {
-    font-size: 24rpx;
-    color: @text-tertiary;
-  }
+.tip-item {
+  font-size: 28rpx;
+  color: @text-secondary;
+  line-height: 1.5;
 }
 
 /* 图片预览容器 */
-.image-preview-container {
+.image-preview {
+  width: 100%;
+  max-width: 600rpx;
+  background-color: @bg-container;
+  border-radius: @radius-lg;
+  padding: 30rpx;
+  box-shadow: @shadow-md;
+  margin: 0 auto;
+}
+
+.preview-header {
+  margin-bottom: 20rpx;
+}
+
+.preview-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: @text-color;
+}
+
+.preview-image {
+  width: 100%;
+  height: 450rpx;
+  border-radius: @radius-md;
+  background-color: @bg-secondary;
+  margin-bottom: 30rpx;
+  object-fit: contain;
+}
+
+.watermark-options {
+  margin-bottom: 30rpx;
+}
+
+.options-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: @text-color;
+  margin-bottom: 16rpx;
+  display: block;
+}
+
+.options-group {
   display: flex;
   flex-wrap: wrap;
-  gap: @spacing-md;
-  margin-bottom: @spacing-lg;
+  gap: 20rpx;
+}
 
-  .image-preview {
-    flex: 1;
-    min-width: 300rpx;
-    background-color: @bg-container;
-    border-radius: @radius-md;
-    overflow: hidden;
-    box-shadow: @shadow-sm;
+.option-item {
+  flex: 1;
+  min-width: 160rpx;
+  padding: 16rpx 20rpx;
+  background-color: @bg-secondary;
+  border-radius: @radius-md;
+  text-align: center;
+  font-size: 28rpx;
+  color: @text-secondary;
+  transition: all 0.2s;
+}
 
-    image {
-      width: 100%;
-      height: 400rpx;
-      object-fit: contain;
-      background-color: @bg-secondary;
-    }
-
-    .image-info {
-      padding: @spacing-sm @spacing-md;
-      font-size: 24rpx;
-      color: @text-secondary;
-      background-color: @bg-container;
-      border-top: 2rpx solid @border-color;
-      text-align: center;
-    }
-
-    &.result {
-      border: 2rpx solid @primary-color;
-    }
-  }
+.option-item.active {
+  background-color: @primary-color;
+  color: @white;
 }
 
 /* 操作按钮 */
 .action-buttons {
-  margin-bottom: @spacing-lg;
+  display: flex;
+  gap: 20rpx;
+}
 
-  .action-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: @spacing-md;
-    border-radius: @radius-md;
-    font-size: 28rpx;
-    font-weight: 500;
-    margin-bottom: @spacing-md;
-    transition: @transition-fast;
+.action-button {
+  flex: 1;
+  height: 80rpx;
+  border-radius: @radius-md;
+  font-size: 30rpx;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
 
-    &:active {
-      transform: translateY(2rpx);
-    }
+.action-button.reset {
+  background-color: @bg-secondary;
+  color: @text-secondary;
+}
 
-    &.process {
-      background-color: @primary-color;
-      color: @text-inverse;
-      box-shadow: 0 4rpx 12rpx rgba(59, 130, 246, 0.2);
-    }
+.action-button.process {
+  background-color: @primary-color;
+  color: @white;
+}
 
-    &.primary {
-      background-color: @primary-color;
-      color: @text-inverse;
-      box-shadow: 0 4rpx 12rpx rgba(59, 130, 246, 0.2);
+/* 加载状态样式 */
+.loading-container {
+  width: 600rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: @bg-container;
+  border-radius: @radius-lg;
+  overflow: hidden;
+  box-shadow: @shadow-md;
+}
 
-      image {
-        width: 32rpx;
-        height: 32rpx;
-        margin-right: @spacing-xs;
-      }
-    }
+.loading-status {
+  width: 100%;
+  position: relative;
+  padding-bottom: 20rpx;
+}
 
-    &.secondary {
-      background-color: @bg-container;
-      color: @text-color;
-      border: 2rpx solid @border-color;
+.original-thumbnail {
+  width: 100%;
+  height: 400rpx;
+  object-fit: contain;
+  background-color: @bg-secondary;
+}
 
-      image {
-        width: 32rpx;
-        height: 32rpx;
-        margin-right: @spacing-xs;
-      }
-    }
-  }
+.status-label {
+  position: absolute;
+  bottom: 30rpx;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 28rpx;
+  color: @text-color;
+  padding: 8rpx;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px);
+}
 
-  .result-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: @spacing-md;
+.loading-animation {
+  height: 300rpx;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: @primary-color;
+}
 
-    .action-button {
-      flex: 1;
-      min-width: 200rpx;
-      margin-bottom: 0;
-    }
+.spinner {
+  width: 100rpx;
+  height: 100rpx;
+  border: 8rpx solid rgba(255, 255, 255, 0.3);
+  border-top-color: @white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 24rpx;
+}
+
+.loading-text {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: @white;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
-/* 历史记录 */
-.history-section {
-  margin-top: @spacing-xl;
+/* 处理结果区域样式 */
+.result-area {
+  width: 100%;
+  max-width: 600rpx;
+  background-color: @bg-container;
+  border-radius: @radius-lg;
+  padding: 30rpx;
+  box-shadow: @shadow-md;
+  margin: 0 auto;
+}
 
-  .section-header {
-    margin-bottom: @spacing-md;
+.result-header {
+  margin-bottom: 20rpx;
+}
 
-    .section-title {
-      font-size: 30rpx;
-      font-weight: 600;
-      color: @text-color;
-    }
+.result-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: @text-color;
+}
+
+.image-comparison {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 30rpx;
+}
+
+.comparison-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.comparison-image {
+  width: 100%;
+  height: 300rpx;
+  border-radius: @radius-md;
+  background-color: @bg-secondary;
+  margin-bottom: 12rpx;
+  object-fit: contain;
+}
+
+.comparison-label {
+  font-size: 28rpx;
+  color: @text-secondary;
+}
+
+.result-actions {
+  display: flex;
+  gap: 20rpx;
+  padding: 24rpx 0;
+  border-top: 1rpx solid @border-color;
+}
+
+.result-button {
+  flex: 1;
+  height: 80rpx;
+  border-radius: @radius-md;
+  font-size: 30rpx;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+
+.result-button.reset {
+  background-color: @bg-secondary;
+  color: @text-secondary;
+}
+
+.result-button.save {
+  background-color: @success-color;
+  color: @white;
+}
+
+/* 错误提示 */
+.error-toast {
+  position: fixed;
+  bottom: 160rpx;
+  left: 50%;
+  transform: translateX(-50%) translateY(100rpx);
+  background-color: @error-color;
+  color: @white;
+  padding: 20rpx 40rpx;
+  border-radius: @radius-md;
+  font-size: 28rpx;
+  opacity: 0;
+  transition: all 0.3s ease;
+  box-shadow: 0 8rpx 24rpx rgba(239, 68, 68, 0.3);
+  z-index: 1000;
+}
+
+.error-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.error-message {
+  white-space: nowrap;
+}
+
+/* 动画效果 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20rpx);
   }
-
-  .history-list {
-    display: flex;
-    padding: @spacing-md 0;
-    width: 100%;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
-    .history-item {
-      width: 200rpx;
-      height: 200rpx;
-      margin-right: @spacing-md;
-      position: relative;
-      border-radius: @radius-md;
-      overflow: hidden;
-      box-shadow: @shadow-sm;
-      flex-shrink: 0;
-      transition: @transition-fast;
-
-      &:active {
-        transform: scale(0.95);
-      }
-
-      &:last-child {
-        margin-right: 0;
-      }
-
-      image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .history-item-bg {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: @spacing-xs;
-        background-color: rgba(0, 0, 0, 0.6);
-        font-size: 22rpx;
-        color: @text-inverse;
-        text-align: center;
-      }
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
+}
+
+.upload-card, .tips-card, .image-preview, .result-area {
+  animation: fadeInUp 0.3s ease-out forwards;
+}
+
+.image-preview {
+  animation-delay: 0.1s;
+}
+
+.tips-card {
+  animation-delay: 0.2s;
 }
